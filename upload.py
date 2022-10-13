@@ -54,5 +54,20 @@ def upload():
             return render_template('upload.html')
     return render_template('upload.html')
 
+@app.route('/list', methods = ['POST','GET']) 
+def keyList():
+    if request.method == 'GET' :
+        try:
+            con=sqlite3.connect("P1.db")
+            cur=con.cursor()
+            cur.execute("SELECT key FROM images")
+            con.commit()
+            # con.close()
+        except:
+            return 'error'
+        finally:
+            return render_template('KeyList.html', keys = cur.fetchall())
+    return render_template('KeyList.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
