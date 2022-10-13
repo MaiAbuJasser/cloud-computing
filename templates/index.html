@@ -8,7 +8,7 @@
 </head>
 <header>
 		<nav class="navbar navbar-expand-custom navbar-mainbg">
-        <a class="navbar-brand navbar-logo" href="#">Image mem-cache</a>
+        <a class="navbar-brand navbar-logo" href="/">Image mem-cache</a>
         <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <i class="fas fa-bars text-white"></i>
         </button>
@@ -16,24 +16,24 @@
             <ul class="navbar-nav ml-auto">
                 <div class="hori-selector"><div class="left"></div><div class="right"></div></div>
                 <li class="nav-item">
-                    <a href="index.html" class="nav-link" href="javascript:void(0);"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+                    <a href="/" class="nav-link" href="javascript:void(0);"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="upload.html" class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Upload</a>
+                    <a href="/upload" class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Upload</a>
                 </li>
                 <li class="nav-item">
-                    <a href="request.html" class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Request</a>
+                    <a href="/request" class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Request</a>
                 </li>
                 <li class="nav-item">
-                    <a href="keyList.html" class="nav-link" href="javascript:void(0);"><i class="far fa-calendar-alt"></i>Key List</a>
+                    <a href="/list" class="nav-link" href="javascript:void(0);"><i class="far fa-calendar-alt"></i>Key List</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="configure.html" class="nav-link" href="javascript:void(0);"><i class="far fa-copy"></i>Configure</a>
+                    <a href="/configure" class="nav-link" href="javascript:void(0);"><i class="far fa-copy"></i>Configure</a>
                 </li>
 <li class="nav-item">
-                    <a href="statistic.html" class="nav-link" href="javascript:void(0);"><i class="far fa-chart-bar"></i>Statistic</a>
+                    <a href="/static" class="nav-link" href="javascript:void(0);"><i class="far fa-chart-bar"></i>Statistic</a>
                 </li>
             </ul>
         </div>
@@ -41,21 +41,221 @@
 	</header>
 <body>
     <div class="d-grid gap-2 col-2 mx-auto">
-      <a href="upload.html">
-        <input type="button" class="btn" value="upload new image">
+      <a href="/upload">
+        <input type="button" class="btn" value="upload new image" name="upload">
       </a>
-      <a href="request.html">
-        <input type="button" class="btn" value="Request image">
+      <a href="/request">
+        <input type="button" class="btn" value="Request image" name="request">
       </a>
-        <a href="keyList.html">
-        <input type="button" class="btn" value="key list">
+        <a href="list">
+        <input type="button" class="btn" value="key list" name="list">
       </a>
-       <a href="configure.html">
-        <input type="button" class="btn" value="conifgure mem-cache">
+       <a href="/configure">
+        <input type="button" class="btn" value="configure mem-cache" name="configure">
       </a>
-         <a href="statistic.html">
-        <input type="button" class="btn" value="Current Statistic mem-cache">
+         <a href="/static">
+        <input type="button" class="btn" value="Current Statistic mem-cache" name="static">
       </a>
     </div>
 </body>
 </html>
+<style>
+    
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+*{
+  font-family: 'Poppins', sans-serif;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  scroll-behavior:smooth;
+  scroll-padding-top:4rem;
+  list-style:none;
+  text-decoration:none;
+}
+
+:root{
+   --main-color:#2288ff;
+   --second-color:#192f6a;
+   --text-color:#314862;
+   --bg-color:#fff;
+
+   --box-shadow: 2px 2px 18px rgb(14 52 54 / 15%);
+}
+
+.d-grid  {
+    padding-top:150px;
+ }
+.d-grid .btn{
+    background-color:rgb(0, 0, 117);
+    color:rgb(240, 240, 240);
+    padding: 14px 28px;
+    width: 100%;
+}
+
+body{
+	font-family: 'Roboto', sans-serif;
+}
+* {
+	margin: 0;
+	padding: 0;
+}
+i {
+	margin-right: 10px;
+}
+/*----------bootstrap-navbar-css------------*/
+.navbar-logo{
+	padding: 15px;
+	color: #fff;
+}
+.navbar-mainbg{
+	background-color: #5161ce;
+	padding: 0px;
+}
+#navbarSupportedContent{
+	overflow: hidden;
+	position: relative;
+}
+#navbarSupportedContent ul{
+	padding: 0px;
+	margin: 0px;
+}
+#navbarSupportedContent ul li a i{
+	margin-right: 10px;
+}
+#navbarSupportedContent li {
+	list-style-type: none;
+	float: left;
+}
+#navbarSupportedContent ul li a{
+	color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 15px;
+    display: block;
+    padding: 20px 20px;
+    transition-duration:0.6s;
+	transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+}
+#navbarSupportedContent>ul>li.active>a{
+	color: #5161ce;
+	background-color: transparent;
+	transition: all 0.7s;
+}
+#navbarSupportedContent a:not(:only-child):after {
+	content: "\f105";
+	position: absolute;
+	right: 20px;
+	top: 10px;
+	font-size: 14px;
+	font-family: "Font Awesome 5 Free";
+	display: inline-block;
+	padding-right: 3px;
+	vertical-align: middle;
+	font-weight: 900;
+	transition: 0.5s;
+}
+#navbarSupportedContent .active>a:not(:only-child):after {
+	transform: rotate(90deg);
+}
+.hori-selector{
+	display:inline-block;
+	position:absolute;
+	height: 100%;
+	top: 0px;
+	left: 0px;
+	transition-duration:0.6s;
+	transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	background-color: #fff;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+	margin-top: 10px;
+}
+.hori-selector .right,
+.hori-selector .left{
+	position: absolute;
+	width: 25px;
+	height: 25px;
+	background-color: #fff;
+	bottom: 10px;
+}
+.hori-selector .right{
+	right: -25px;
+}
+.hori-selector .left{
+	left: -25px;
+}
+.hori-selector .right:before,
+.hori-selector .left:before{
+	content: '';
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #5161ce;
+}
+.hori-selector .right:before{
+	bottom: 0;
+    right: -25px;
+}
+.hori-selector .left:before{
+	bottom: 0;
+    left: -25px;
+}
+
+
+@media(min-width: 992px){
+	.navbar-expand-custom {
+	    -ms-flex-flow: row nowrap;
+	    flex-flow: row nowrap;
+	    -ms-flex-pack: start;
+	    justify-content: flex-start;
+	}
+	.navbar-expand-custom .navbar-nav {
+	    -ms-flex-direction: row;
+	    flex-direction: row;
+	}
+	.navbar-expand-custom .navbar-toggler {
+	    display: none;
+	}
+	.navbar-expand-custom .navbar-collapse {
+	    display: -ms-flexbox!important;
+	    display: flex!important;
+	    -ms-flex-preferred-size: auto;
+	    flex-basis: auto;
+	}
+}
+
+
+@media (max-width: 991px){
+	#navbarSupportedContent ul li a{
+		padding: 12px 30px;
+	}
+	.hori-selector{
+		margin-top: 0px;
+		margin-left: 10px;
+		border-radius: 0;
+		border-top-left-radius: 25px;
+		border-bottom-left-radius: 25px;
+	}
+	.hori-selector .left,
+	.hori-selector .right{
+		right: 10px;
+	}
+	.hori-selector .left{
+		top: -25px;
+		left: auto;
+	}
+	.hori-selector .right{
+		bottom: -25px;
+	}
+	.hori-selector .left:before{
+		left: -25px;
+		top: -25px;
+	}
+	.hori-selector .right:before{
+		bottom: -25px;
+		left: -25px;
+	}
+}
+
+</style>

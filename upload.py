@@ -1,70 +1,58 @@
+import base64
 import sqlite3
 from flask import Flask,render_template,request,flash,redirect, session,url_for, json
 
 app = Flask(__name__)
-def convertToBinaryData(filename):
-    with open(filename, 'rb') as file:
-       myImg = new_func(file)
-    return myImg
-
-def new_func(file):
-    myImg = file.read()
-    return myImg
 
 @app.route('/')
 def main() :
-    return render_template("upload.html")
+    return render_template("index.html")
 
-# @app.route('/register',methods=['GET','POST'])
-# def register():
-#     if request.method == 'POST' :
-#         try:
-#             name=request.form['name']
-#             password=request.form['password']
-#             con=sqlite3.connect("test1.db")
-#             cur=con.cursor()
-#             cur.execute("insert into customers (name,password) values(?,?)",(name,password))
-#             con.commit()
-#             con.close()
-            
-            
-
-#         except:
-#          return("error in adding")
-#         finally:
-#          return ('success')
-#     else:
-         
-#      return render_template('register.html')
-
-     
-@app.route('/upload', methods = ["POST", "GET"]) 
-def upload():
-    if (request.method == "POST") :
+@app.route('/request', methods = ['GET','POST'])
+def req():
+    if request.method == 'POST' :
         try:
-            key = request.form["Enter Key"]
-            image = request.form["Choose File"]
-            myImg = convertToBinaryData(image)
-            con = sqlite3.connect("P1.db")
-            cur = con.cursor()
-            cur.execute("INSERT INTO images (key, image) VALUES(?, ?)",(key, myImg))
+            key = request.form['key']
+            con=sqlite3.connect("P1.db")
+            cur=con.cursor()
+            img = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
+            cur.execute("SELECT key FROM images WHERE key = ?", [key])
+            print(img[0][0])
+            isNewKey = len(cur.fetchall()) == 0
+            if not isNewKey :
+                return render_template('request.html', user_image = img[0][0])
+            else :
+                return 'error'
+        except:
+            return("error in adding")
+        finally:
             con.commit()
-            cur.close()
+            con.close()
+    return render_template('request.html')
+
+@app.route('/upload', methods = ['POST','GET']) 
+def upload():
+    if request.method == 'POST' :
+        try:
+            key = request.form["key1"]
+            image=request.files["image"]
+            imagePath = request.form["image1"]
+            myImg = imagePath + '\\' + image.filename
+            con=sqlite3.connect("P1.db")
+            cur=con.cursor()
+            cur.execute("SELECT key FROM images WHERE key = ?", [key])
+            isNewKey = len(cur.fetchall()) == 0
+            if(isNewKey) :
+                cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key,myImg))
+            else :
+                cur.execute("UPDATE images SET image = ? WHERE key = ?", (myImg, key))
+            con.commit()
+            con.close()
         except:
             return 'error'
         finally:
-            return 'success'
-    else:
-     return render_template('upload.html')
-
-
-
-
-
-
-
-
-
+            return render_template('upload.html')
+    return render_template('upload.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

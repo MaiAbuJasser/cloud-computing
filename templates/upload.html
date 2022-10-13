@@ -1,53 +1,371 @@
-<html>
-<head>
-	<link rel="icon" href="https://www.rawshorts.com/freeicons/wp-content/uploads/2017/01/blue_repicthousebase_1484336386-1.png" type="image/x-icon">
-	<title> Upload</title>
-	<link rel="stylesheet" href="css\upload.css">
-</head>
-	<header>
-<nav class="navbar navbar-expand-custom navbar-mainbg">
-        <a class="navbar-brand navbar-logo" href="#">Image mem-cache</a>
-        <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <i class="fas fa-bars text-white"></i>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ml-auto">
-                <div class="hori-selector"><div class="left"></div><div class="right"></div></div>
-                <li class="nav-item">
-                    <a href="index.html" class="nav-link" href="javascript:void(0);"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
-                </li>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="icon" href="https://www.rawshorts.com/freeicons/wp-content/uploads/2017/01/blue_repicthousebase_1484336386-1.png" type="image/x-icon">
+        <title> Upload</title>
+        <link rel="stylesheet" href="css\upload.css">
+    </head>
+    <body>
+        <header>
+            <nav class="navbar navbar-expand-custom navbar-mainbg">
+                    <a class="navbar-brand navbar-logo" href="/">Image mem-cache</a>
+                    <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fas fa-bars text-white"></i>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav ml-auto">
+                            <div class="hori-selector"><div class="left"></div><div class="right"></div></div>
+                            <li class="nav-item">
+                                <a href="/" class="nav-link" href="javascript:void(0);"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+                            </li>
+            
+                            <li class="nav-item">
+                                <a href="/upload" class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Upload</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/request" class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Request</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/list" class="nav-link" href="javascript:void(0);"><i class="far fa-calendar-alt"></i>Key List</a>
+                            </li>
+            
+                            <li class="nav-item">
+                                <a href="/configure" class="nav-link" href="javascript:void(0);"><i class="far fa-copy"></i>Configure</a>
+                            </li>
+            <li class="nav-item">
+                                <a href="/static" class="nav-link" href="javascript:void(0);"><i class="far fa-chart-bar"></i>Statistic</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                </header>
+                <div class="add">
+                    <h1>Upload Image</h1>
+                    <form method="POST" action="upload" enctype="multipart/form-data">
+                        <input type="enter key" class="input-box" placeholder="choose key" name="key1">
+                        <br> </br>
+                        <input type="path" class="input-box" placeholder="Enter Image Path" name="image1">
+                        <input type="file" class="input-box" placeholder="choose image" name="image">
+                        <br> </br>
+                        <button type="submit" class="add-btn" name="key">submit</button>
+                    </form>
+                </div>
+            </body></html>
+            <style>
+                
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+*{
+  font-family: 'Poppins', sans-serif;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  scroll-behavior:smooth;
+  scroll-padding-top:4rem;
+  list-style:none;
+  text-decoration:none;
+}
 
-                <li class="nav-item">
-                    <a href="upload.html" class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Upload</a>
-                </li>
-                <li class="nav-item">
-                    <a href="request.html" class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Request</a>
-                </li>
-                <li class="nav-item">
-                    <a href="keyList.html" class="nav-link" href="javascript:void(0);"><i class="far fa-calendar-alt"></i>Key List</a>
-                </li>
+:root{
+   --main-color:#2288ff;
+   --second-color:#192f6a;
+   --text-color:#314862;
+   --bg-color:#fff;
 
-                <li class="nav-item">
-                    <a href="configure.html" class="nav-link" href="javascript:void(0);"><i class="far fa-copy"></i>Configure</a>
-                </li>
-<li class="nav-item">
-                    <a href="statistic.html" class="nav-link" href="javascript:void(0);"><i class="far fa-chart-bar"></i>Statistic</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-	</header>
-<body>
-	<div class= "add-apartment-form">
-	<h1>Upload New Image</h1>
-	<form method="post" action="upload">
-	<input type="Enter Key" class="input-box" placeholder="Enter Key" name="Enter Key">
-		<br></br>
-	<input type="Choose File" class="input-box" placeholder="Choose Image File/URL" name="Choose File">
-      <br></br>
+   --box-shadow: 2px 2px 18px rgb(14 52 54 / 15%);
+}
+img {
+	width: 100%;
+}
+body {
+	color: var(--text-color) ;
+}
+section {
+	padding: 4.5rem 0 3rem;
+}
+.container {
+	max-width: 1068px;
+	margin-left: auto;
+	margin-right: auto;
+}
+header{
+	display: block;
+	width: 100%;
+	background: var(--bg-color);
+	position: fixed;
+	top : 0;
+	left: 0;
+	z-index: 100;
+}
+.nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 35px;
+	background-color:rgb(240, 240, 240);
+	color:rgb(0, 0, 117);
+}
+.logo{
+	display: flex;
+	align-items: center;
+	column-gap: 0.5rem;
+	font-size: 1rem;
+	font-weight: 700;
+	color: var(--text-color);
+	text-transform: uppercase;
+}
+.logo .bx {
+	font-size: 24px;
+	color: var(--main-color) ;
+}
+.navbar{
+	display: flex;
+}
+.navbar a {
+	padding: 8px 17px;
 
-	<button type= "Submit" class="add-btn" name = "key">Submit</button>
-	</form>
-	</div>
-	</body>
- </html>
+	font-size: 1rem;
+	text-transform: uppercase;
+	font-weight: 500;
+}
+.navbar a:hover {
+	color: var(--main-color) ;
+}
+#menu-icon {
+font-size: 24px;
+cursor: pointer;
+display: none;
+}
+#menu {
+display: none;
+}
+.btn {
+	padding: 8px 22px;
+	background: var(--main-color);
+	color: var(--bg-color) ;
+	border-radius: 5rem;
+
+}
+.btn:hover {
+	background: #3492fd;
+}
+body{
+	margin: 0;
+	padding: 0;
+	font-family: sans-serif;
+	background-image: url(background.jpg);
+	background-size : cover;
+	background-position: center;
+}
+
+.add-apartment-form{
+	background : #fff;
+	padding: 20px;
+	margin: 10% auto 0;
+	text-align: center;
+}
+.add-apartment-form h1{
+	color: #1c8adb;
+	margin-bottom : 30px;
+}
+
+.input-box{
+	border-radius: 20px;
+	padding: 10px;
+	margin: 10px 0;
+	width: 40%;
+	border: 1px solid #999;
+	outline: none;
+}
+button{
+	color: #fff;
+	width: 20%;
+	padding: 10px;
+	border-radius: 20px;
+	font-size: 15px;
+	margin: 10px 0;
+	border: none;
+	outline: none;
+	cursor: pointer;
+
+}
+.add-btn{
+	background-color : #1c8adb;
+}
+
+
+a{text-decoration : none}
+
+Kr{
+	margin-top: 20px;
+	width: 40;
+	}
+
+
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+body{
+	font-family: 'Roboto', sans-serif;
+}
+* {
+	margin: 0;
+	padding: 0;
+}
+i {
+	margin-right: 10px;
+}
+/*----------bootstrap-navbar-css------------*/
+.navbar-logo{
+	padding: 15px;
+	color: #fff;
+}
+.navbar-mainbg{
+	background-color: #5161ce;
+	padding: 0px;
+}
+#navbarSupportedContent{
+	overflow: hidden;
+	position: relative;
+}
+#navbarSupportedContent ul{
+	padding: 0px;
+	margin: 0px;
+}
+#navbarSupportedContent ul li a i{
+	margin-right: 10px;
+}
+#navbarSupportedContent li {
+	list-style-type: none;
+	float: left;
+}
+#navbarSupportedContent ul li a{
+	color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 15px;
+    display: block;
+    padding: 20px 20px;
+    transition-duration:0.6s;
+	transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+}
+#navbarSupportedContent>ul>li.active>a{
+	color: #5161ce;
+	background-color: transparent;
+	transition: all 0.7s;
+}
+#navbarSupportedContent a:not(:only-child):after {
+	content: "\f105";
+	position: absolute;
+	right: 20px;
+	top: 10px;
+	font-size: 14px;
+	font-family: "Font Awesome 5 Free";
+	display: inline-block;
+	padding-right: 3px;
+	vertical-align: middle;
+	font-weight: 900;
+	transition: 0.5s;
+}
+#navbarSupportedContent .active>a:not(:only-child):after {
+	transform: rotate(90deg);
+}
+.hori-selector{
+	display:inline-block;
+	position:absolute;
+	height: 100%;
+	top: 0px;
+	left: 0px;
+	transition-duration:0.6s;
+	transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	background-color: #fff;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+	margin-top: 10px;
+}
+.hori-selector .right,
+.hori-selector .left{
+	position: absolute;
+	width: 25px;
+	height: 25px;
+	background-color: #fff;
+	bottom: 10px;
+}
+.hori-selector .right{
+	right: -25px;
+}
+.hori-selector .left{
+	left: -25px;
+}
+.hori-selector .right:before,
+.hori-selector .left:before{
+	content: '';
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #5161ce;
+}
+.hori-selector .right:before{
+	bottom: 0;
+    right: -25px;
+}
+.hori-selector .left:before{
+	bottom: 0;
+    left: -25px;
+}
+
+
+@media(min-width: 992px){
+	.navbar-expand-custom {
+	    -ms-flex-flow: row nowrap;
+	    flex-flow: row nowrap;
+	    -ms-flex-pack: start;
+	    justify-content: flex-start;
+	}
+	.navbar-expand-custom .navbar-nav {
+	    -ms-flex-direction: row;
+	    flex-direction: row;
+	}
+	.navbar-expand-custom .navbar-toggler {
+	    display: none;
+	}
+	.navbar-expand-custom .navbar-collapse {
+	    display: -ms-flexbox!important;
+	    display: flex!important;
+	    -ms-flex-preferred-size: auto;
+	    flex-basis: auto;
+	}
+}
+
+
+@media (max-width: 991px){
+	#navbarSupportedContent ul li a{
+		padding: 12px 30px;
+	}
+	.hori-selector{
+		margin-top: 0px;
+		margin-left: 10px;
+		border-radius: 0;
+		border-top-left-radius: 25px;
+		border-bottom-left-radius: 25px;
+	}
+	.hori-selector .left,
+	.hori-selector .right{
+		right: 10px;
+	}
+	.hori-selector .left{
+		top: -25px;
+		left: auto;
+	}
+	.hori-selector .right{
+		bottom: -25px;
+	}
+	.hori-selector .left:before{
+		left: -25px;
+		top: -25px;
+	}
+	.hori-selector .right:before{
+		bottom: -25px;
+		left: -25px;
+	}
+}
+            </style>
