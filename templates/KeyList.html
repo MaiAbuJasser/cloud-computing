@@ -43,9 +43,10 @@
 <body>
     <div class= "add-apartment-form">
         <h1>key list</h1>
-         <h3>{% for key in keys %}
+         {% for key in keys %}
+		 <h3>{{  key  }}</h3>
 		 {% endfor %} 
-		</h3>
+		
         </div>
 </body>
 </html>

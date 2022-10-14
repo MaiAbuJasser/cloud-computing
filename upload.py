@@ -1,8 +1,11 @@
-import base64
+from PIL import Image
+import os
+from lib2to3.pytree import convert
 import sqlite3
 from flask import Flask,render_template,request,flash,redirect, session,url_for, json
 
 app = Flask(__name__)
+path = 'J:\\UNI\\Paralle & Distrebuting System\\Projects\\P1\\Cloud-Project\\static\\'
 
 @app.route('/')
 def main() :
@@ -15,12 +18,12 @@ def req():
             key = request.form['key']
             con=sqlite3.connect("P1.db")
             cur=con.cursor()
-            img = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
+            name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
-            print(img[0][0])
             isNewKey = len(cur.fetchall()) == 0
+            print((not isNewKey))
             if not isNewKey :
-                return render_template('request.html', user_image = img[0][0])
+                return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
                 return 'error'
         except:
@@ -37,15 +40,15 @@ def upload():
             key = request.form["key1"]
             image=request.files["image"]
             imagePath = request.form["image1"]
-            myImg = imagePath + '\\' + image.filename
+            myImg = saveFile(path + image.filename, image.filename, imagePath)
             con=sqlite3.connect("P1.db")
             cur=con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
             if(isNewKey) :
-                cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key,myImg))
+                cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
             else :
-                cur.execute("UPDATE images SET image = ? WHERE key = ?", (myImg, key))
+                cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
             con.commit()
             con.close()
         except:
@@ -66,8 +69,12 @@ def keyList():
         except:
             return 'error'
         finally:
-            return render_template('KeyList.html', keys = cur.fetchall())
+            return render_template('KeyList.html', keys = [str(val[0]) for val in cur.fetchall()])
     return render_template('KeyList.html')
 
+def saveFile(savedFile, originalFile, originalFilePath) :
+    file = Image.open(os.path.join(originalFilePath, originalFile))
+    file.save(savedFile)
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug = True)
