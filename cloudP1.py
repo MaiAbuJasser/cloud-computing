@@ -20,7 +20,7 @@ def req():
             cur=con.cursor()
             name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
-            isNewKey = len(cur.fetchall()) == 0
+            isNewKey = len(cur.fetchone()) == 0
             print((not isNewKey))
             if not isNewKey :
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
