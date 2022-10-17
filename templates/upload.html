@@ -42,9 +42,10 @@
 	<div class= "add-apartment-form">
 	<h1>Upload New Image</h1>
 	<form method="POST" action="upload" enctype="multipart/form-data">
-                        <input type="enter key" class="input-box" placeholder="choose key" name="key1">
+                        <input type="enter key" class="input-boxx" placeholder="choose key" name="key1">
                         <br> </br>
-                       <!-- <input type="path" class="input-box" placeholder="Enter Image name" name="image1">-->
+                        <input type="path" class="input-box" placeholder="Enter Image name" name="image1">
+
                         <input type="file" class="input-box" placeholder="choose image" name="image">
                         <br> </br>
                         <button type="submit" class="add-btn" name="key">submit</button>
@@ -169,7 +170,15 @@ body{
 	margin-bottom : 30px;
 }
 
-.input-box{
+.input-box {
+	border-radius: 20px;
+	padding: 10px;
+	margin: 10px 0;
+	width: 20%;
+	border: 1px solid #999;
+	outline: none;
+}
+.input-boxx {
 	border-radius: 20px;
 	padding: 10px;
 	margin: 10px 0;
