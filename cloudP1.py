@@ -6,7 +6,6 @@ from flask import Flask,render_template,request,flash,redirect, session,url_for,
 
 app = Flask(__name__)
 path = '.\\static\\'
-my_dict={'Dave': '004', 'Ava': '002', 'Joe': '003', 'Chris': '005'}
 
 @app.route('/')
 def main() :
