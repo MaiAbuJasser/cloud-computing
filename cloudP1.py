@@ -5,7 +5,7 @@ import sqlite3
 from flask import Flask,render_template,request,flash,redirect, session,url_for, json
 
 app = Flask(__name__)
-path = 'J:\\UNI\\Paralle & Distrebuting System\\Projects\\P1\\Cloud-Project\\static\\'
+path = '.\\static\\'
 
 @app.route('/')
 def main() :
@@ -27,7 +27,7 @@ def req():
             else :
                 return 'error'
         except:
-            return("error in adding")
+            return("error")
         finally:
             con.commit()
             con.close()
