@@ -44,7 +44,7 @@ def upload():
             con=sqlite3.connect("P1.db")
             cur=con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
-            isNewKey = len(cur.fetchall()) == 0
+            isNewKey = len(cur.fetchone()) == 0
             if(isNewKey) :
                 cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
             else :
