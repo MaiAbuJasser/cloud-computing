@@ -6,6 +6,7 @@ from flask import Flask,render_template,request,flash,redirect, session,url_for,
 
 app = Flask(__name__)
 path = '.\\static\\'
+my_dict={'Dave': '004', 'Ava': '002', 'Joe': '003', 'Chris': '005'}
 
 @app.route('/')
 def main() :
@@ -18,16 +19,15 @@ def req():
             key = request.form['key']
             con=sqlite3.connect("P1.db")
             cur=con.cursor()
-            name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchone()) == 0
-            print((not isNewKey))
             if not isNewKey :
+                name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchone()
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
-                return 'error'
+                return 'key is not found !'
         except:
-            return("error")
+            return("error occure")
         finally:
             con.commit()
             con.close()
@@ -75,6 +75,7 @@ def keyList():
 def saveFile(savedFile, originalFile, originalFilePath) :
     file = Image.open(os.path.join(originalFilePath, originalFile))
     file.save(savedFile)
+    
 
 if __name__ == '__main__':
     app.run(debug = True)
