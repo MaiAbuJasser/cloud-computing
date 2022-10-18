@@ -1,9 +1,13 @@
 from asyncio.windows_events import NULL
+from email import policy
 from PIL import Image
 import os
 from lib2to3.pytree import convert
 import sqlite3
 from flask import Flask,render_template,request,flash,redirect, session,url_for, json
+import random
+from collections import OrderedDict
+
 
 app = Flask(__name__)
 path = '.\\static\\'
@@ -23,12 +27,16 @@ def req():
             if key in memcache.keys() :
                 print("memcache")
                 name = memcache[key]
+                if policyy == '2' :
+                    leastRecentlyUsed(key)
                 return render_template('request.html', user_image = ('..\\static\\' + name))
             cur = con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
             if not isNewKey :
                 name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
+                if policyy == '2' :
+                    leastRecentlyUsed(key)
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
                 return render_template('request.html', keyCheck = "key not found !")
@@ -54,12 +62,15 @@ def upload():
             if(isNewKey) :
                 cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
                 done = "Upload Successfully"
-            elif key in memcache.keys() :
-                done = "Update Successfully"
+                memcache.put(key, image.filename)
             else :
                 cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
                 done = "Update Successfully"
-            memcache[key] = image.filename
+                memcache[key] = image.filename
+            if policyy == '1' :
+                randomPolicy()
+            else :
+                leastRecentlyUsed(key)
             con.commit()
             con.close()
             
@@ -94,6 +105,11 @@ def config():
     if request.method == 'POST' :
        try:
             key = request.form["key"]
+            global capacity
+            capacity = request.form["Capacity in MB"]
+            global policyy
+            policyy = request.form["policy"]
+
             if request.form["clear"] == 'Clear' :
                 del memcache[key]
             elif request.form["clearAll"] == 'Clear All' :
@@ -104,6 +120,15 @@ def config():
        finally:
             return render_template('configure.html')
     return render_template('configure.html')
+
+def randomPolicy() :
+    if len(memcache) > capacity:
+        random.choice(list(memcache.values()))
+
+def leastRecentlyUsed(key) :
+    memcache.move_to_end(key)
+    if len(memcache) > capacity:
+        memcache.popitem(last = False)
 
 if __name__ == '__main__':
     app.run(debug = True)
