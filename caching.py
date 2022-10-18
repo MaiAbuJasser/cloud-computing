@@ -17,10 +17,9 @@ def main() :
 @app.route('/request', methods = ['GET','POST'])
 def req():
     if request.method == 'POST' :
-        try:
-            key = request.form['key']
-            if 'key' in my_hash.keys():
-             myimg=my_hash.get(key)
+             key = request.form['key']
+             if 'key' in my_hash.keys():
+              myimg=my_hash.get(key)
              return render_template('request.html', user_image = ('..\\static\\'+myimg)
              cur.execute("SELECT key FROM images WHERE key = ?", [key])
              isNewKey = len(cur.fetchall()) == 0
@@ -32,11 +31,8 @@ def req():
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
               else :
                 return 'key is not found !'
-        except:
-            return("error occure")
-        finally:
-            con.commit()
-            con.close()
+                 con.commit()
+                 con.close()
     return render_template('request.html')
 
 @app.route('/upload', methods = ['POST','GET']) 
