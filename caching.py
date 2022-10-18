@@ -24,9 +24,10 @@ def req():
              con=sqlite3.connect("P1.db")
              cur=con.cursor()
              cur.execute("SELECT key FROM images WHERE key = ?", [key])
-             isNewKey = len(cur.fetchone()) == 0
+             isNewKey = len(cur.fetchall()) == 0
              if not isNewKey :
-                name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchone()
+                name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
+                my_hash.put(key,name)
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
                 return 'key is not found !'
@@ -48,14 +49,14 @@ def upload():
             con=sqlite3.connect("P1.db")
             cur=con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
-            isNewKey = len(cur.fetchone()) == 0
+            isNewKey = len(cur.fetchall()) == 0
             if(isNewKey) :
                 cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
                 my_hash.put(key,"image.filename")
                 
             else :
                 cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
-                my_hash["key"]="image.filename"
+                my_hash[key]="image.filename"
             con.commit()
             con.close()
         except:
