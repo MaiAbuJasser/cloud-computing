@@ -23,13 +23,11 @@ def req():
             cur=con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
-            if memcache[key] != NULL :
-                    return render_template('configure.html', user_image = ('..\\static\\' + memcache[key]))
-            elif not isNewKey :
-                    name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
-                    return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
+            if not isNewKey :
+                name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
+                return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
-                    return render_template('configure.html', keyCheck = "key not found !")
+                return render_template('request.html', keyCheck = "key not found !")
         except:
             return("error occur")
         finally:
@@ -49,18 +47,21 @@ def upload():
             cur=con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
-            if memcache[key] != NULL :
+            print(key in memcache.keys())
+            if(isNewKey) :
+                cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
+                done = "Upload Successfully"
+            elif key in memcache.keys() :
+                print("memcache")
                 done = "Update Successfully"
             else :
-                if(isNewKey) :
-                    cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
-                    done = "Upload Successfully"
-                else :
-                    cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
-                    done = "Update Successfully"
+                print("database")
+                cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
+                done = "Update Successfully"
             memcache[key] = image.filename
             con.commit()
             con.close()
+            
         except:
             return 'error'
         finally:
@@ -91,12 +92,26 @@ def saveFile(savedFile, originalFile, originalFilePath) :
 def config():
     if request.method == 'POST' :
         try:
+            value = request.file['value']
             key = request.form['key']
-            if request.form["clear"] == 'Clear' :
-                del memcache[key]
-            elif request.form["clearAll"] == 'clearAll' :
-                for keys in memcache.keys() :
-                    del memcache[keys]
+            # clear = request.form["clear"]
+            # clearAll = request.form["clearAll"]
+            if request.form["put"] == 'Put' :
+                print("lllll")
+                memcache[key] = value.filename
+            elif request.form["get"] == 'Get' :
+                print("lllll")
+                con=sqlite3.connect("P1.db")
+                cur=con.cursor()
+                cur.execute("SELECT key FROM images WHERE key = ?", [key])
+                isNewKey = len(cur.fetchall()) == 0
+                if memcache[key] != NULL :
+                    return render_template('configure.html', user_image = ('..\\static\\' + memcache[key]))
+                elif not isNewKey :
+                    name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
+                    return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
+                else :
+                    return render_template('configure.html', keyCheck = "key not found !")
         except:
             return 'error'
         finally:

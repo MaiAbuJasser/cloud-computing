@@ -8,7 +8,7 @@ from flask import Flask,render_template,request,flash,redirect, session,url_for,
 app = Flask(__name__)
 path = '.\\static\\'
 
-my_hash= Hashable(capacity=5)
+my_hash = {}
 
 @app.route('/')
 def main() :
@@ -42,6 +42,7 @@ def req():
 def upload():
     if request.method == 'POST' :
         try:
+            print(request.method)
             key = request.form["key1"]
             image=request.files["image"]
             imagePath = request.form["image1"]
