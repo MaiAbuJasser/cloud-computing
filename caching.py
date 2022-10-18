@@ -21,7 +21,7 @@ def req():
             key = request.form['key']
             if 'key' in my_hash.keys():
              myimg=my_hash.get(key)
-             return render_template('request.html', user_image = myimg)
+             return render_template('request.html', user_image = ('..\\static\\'+myimg)
              con=sqlite3.connect("P1.db")
              cur=con.cursor()
              cur.execute("SELECT key FROM images WHERE key = ?", [key])
