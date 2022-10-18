@@ -8,6 +8,10 @@ from flask import Flask,render_template,request,flash,redirect, session,url_for,
 app = Flask(__name__)
 path = '.\\static\\'
 memcache = {}
+hit=0
+miss=0
+hitrate=0
+missrate=0
 
 
 @app.route('/')
@@ -23,7 +27,11 @@ def req():
             if key in memcache.keys() :
                 print("memcache")
                 name = memcache[key]
+                hit+=hit
+                hitrate+=hit/(hit+miss)
                 return render_template('request.html', user_image = ('..\\static\\' + name))
+            miss+=miss
+            missrate+=miss/(hit+miss)
             cur = con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
@@ -53,9 +61,11 @@ def upload():
             isNewKey = len(cur.fetchall()) == 0
             if(isNewKey) :
                 cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
+                memcache.put(key,"image.filename")
+                miss+=miss
+                missrate+=miss/(hit+miss)
                 done = "Upload Successfully"
-            elif key in memcache.keys() :
-                done = "Update Successfully"
+                
             else :
                 cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
                 done = "Update Successfully"
