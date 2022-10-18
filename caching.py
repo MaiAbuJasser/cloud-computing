@@ -23,7 +23,7 @@ def req():
              return render_template('request.html', user_image = ('..\\static\\'+myimg))
              cur.execute("SELECT key FROM images WHERE key = ?", [key])
              isNewKey = len(cur.fetchall()) == 0
-              if not isNewKey:
+            if not isNewKey:
                 con=sqlite3.connect("P1.db")
                 cur=con.cursor()                    
                 name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()

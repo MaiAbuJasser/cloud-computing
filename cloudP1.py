@@ -92,30 +92,16 @@ def saveFile(savedFile, originalFile, originalFilePath) :
 @app.route('/config', methods = ['POST','GET']) 
 def config():
     if request.method == 'POST' :
-        try:
-            value = request.file['value']
-            key = request.form['key']
-            # clear = request.form["clear"]
-            # clearAll = request.form["clearAll"]
-            if request.form["put"] == 'Put' :
-                print("lllll")
-                memcache[key] = value.filename
-            elif request.form["get"] == 'Get' :
-                print("lllll")
-                con=sqlite3.connect("P1.db")
-                cur=con.cursor()
-                cur.execute("SELECT key FROM images WHERE key = ?", [key])
-                isNewKey = len(cur.fetchall()) == 0
-                if memcache[key] != NULL :
-                    return render_template('configure.html', user_image = ('..\\static\\' + memcache[key]))
-                elif not isNewKey :
-                    name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
-                    return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
-                else :
-                    return render_template('configure.html', keyCheck = "key not found !")
-        except:
+       try:
+            key = request.form["key"]
+            if request.form["clear"] == 'Clear' :
+                del memcache[key]
+            elif request.form["clearAll"] == 'Clear All' :
+                memcache.clear()
+       
+       except:
             return 'error'
-        finally:
+       finally:
             return render_template('configure.html')
     return render_template('configure.html')
 
