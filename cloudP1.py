@@ -76,5 +76,19 @@ def saveFile(savedFile, originalFile, originalFilePath) :
     file = Image.open(os.path.join(originalFilePath, originalFile))
     file.save(savedFile)
 
+@app.route('/config', methods = ['POST','GET']) 
+def config():
+    if request.method == 'GET' :
+        try:
+            con=sqlite3.connect("P1.db")
+            cur=con.cursor()
+            cur.execute("SELECT key FROM images")
+            con.commit()
+            # con.close()
+        except:
+            return 'error'
+        finally:
+            return render_template('KeyList.html', keys = [str(val[0]) for val in cur.fetchall()])
+    return render_template('KeyList.html')
 if __name__ == '__main__':
     app.run(debug = True)
