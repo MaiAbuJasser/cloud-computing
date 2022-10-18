@@ -21,11 +21,10 @@ def req():
             key = request.form['key']
             if 'key' in my_hash.keys():
              myimg=my_hash.get(key)
+             return render_template('request.html', user_image = myimg)
              con=sqlite3.connect("P1.db")
              cur=con.cursor()
              cur.execute("SELECT key FROM images WHERE key = ?", [key])
-             isNewKey = len(cur.fetchall()) == 0
-             if not isNewKey :
                 name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
                 my_hash.put(key,name)
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
