@@ -19,12 +19,13 @@ def req():
             con=sqlite3.connect("P1.db")
             cur=con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
-            isNewKey = len(cur.fetchone()) == 0
+            isNewKey = len(cur.fetchall()) == 0
             if not isNewKey :
-                name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchone()
+                print("lllll")
+                name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
-                return 'key is not found !'
+                return render_template('request.html', keyCheck = "key not found !")
         except:
             return("error occure")
         finally:
@@ -50,10 +51,11 @@ def upload():
                 cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
             con.commit()
             con.close()
+            
         except:
             return 'error'
         finally:
-            return render_template('upload.html')
+            return render_template('upload.html', done = "Upload Completed")
     return render_template('upload.html')
 
 @app.route('/list', methods = ['POST','GET']) 

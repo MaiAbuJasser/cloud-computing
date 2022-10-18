@@ -55,7 +55,11 @@
 		<br></br>
 	<button type= "Search" class="add-btn">Search</button>
 	</form>
-    <img src="{{  user_image  }}">
+	{% if user_image == null %}
+		 <h3>{{ keyCheck }}</h3>
+	{% else %} 
+		 <img src="{{  user_image  }}">
+	{% endif %} 
 </div>
 	</body>
  </html>
