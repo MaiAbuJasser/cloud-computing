@@ -3,6 +3,7 @@ import os
 from lib2to3.pytree import convert
 import sqlite3
 from flask import Flask,render_template,request,flash,redirect, session,url_for, json
+from app import main, memcache
 
 app = Flask(__name__)
 path = '.\\static\\'
@@ -44,18 +45,20 @@ def upload():
             con=sqlite3.connect("P1.db")
             cur=con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
-            isNewKey = len(cur.fetchone()) == 0
+            isNewKey = len(cur.fetchall()) == 0
             if(isNewKey) :
                 cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
+                done = "Upload Successfully"
             else :
                 cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
+                done = "Update Successfully"
             con.commit()
             con.close()
             
         except:
             return 'error'
         finally:
-            return render_template('upload.html', done = "Upload Completed")
+            return render_template('upload.html', done = done)
     return render_template('upload.html')
 
 @app.route('/list', methods = ['POST','GET']) 
@@ -80,17 +83,24 @@ def saveFile(savedFile, originalFile, originalFilePath) :
 
 @app.route('/config', methods = ['POST','GET']) 
 def config():
-    if request.method == 'GET' :
+    if request.method == 'POST' :
         try:
-            con=sqlite3.connect("P1.db")
-            cur=con.cursor()
-            cur.execute("SELECT key FROM images")
-            con.commit()
-            # con.close()
+            cap = request.form["Capacity in MB"]
+            while cap != memcache.__len__ :
+                if request.button['Put'] :
+                    main.put()
+                    print(memcache)
+                elif request.button['Get'] :
+                    main.get(memcache)
+                elif request.button['clear'] :
+                    main.clear(memcache)
+                elif request.button['clearAll'] :
+                    main.clearAll(memcache)
         except:
             return 'error'
         finally:
-            return render_template('KeyList.html', keys = [str(val[0]) for val in cur.fetchall()])
-    return render_template('KeyList.html')
+            return render_template('configure.html')
+    return render_template('configure.html')
+
 if __name__ == '__main__':
     app.run(debug = True)
