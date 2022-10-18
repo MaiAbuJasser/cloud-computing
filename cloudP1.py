@@ -19,8 +19,12 @@ def req():
     if request.method == 'POST' :
         try:
             key = request.form['key']
-            con=sqlite3.connect("P1.db")
-            cur=con.cursor()
+            con = sqlite3.connect("P1.db")
+            if key in memcache.keys() :
+                print("memcache")
+                name = memcache[key]
+                return render_template('request.html', user_image = ('..\\static\\' + name))
+            cur = con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
             if not isNewKey :
@@ -47,15 +51,12 @@ def upload():
             cur=con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
-            print(key in memcache.keys())
             if(isNewKey) :
                 cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
                 done = "Upload Successfully"
             elif key in memcache.keys() :
-                print("memcache")
                 done = "Update Successfully"
             else :
-                print("database")
                 cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
                 done = "Update Successfully"
             memcache[key] = image.filename
