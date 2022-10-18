@@ -1,3 +1,4 @@
+from typing import Hashable
 from PIL import Image
 import os
 from lib2to3.pytree import convert
@@ -6,6 +7,8 @@ from flask import Flask,render_template,request,flash,redirect, session,url_for,
 
 app = Flask(__name__)
 path = '.\\static\\'
+
+my_hash= Hashable(capacity=5)
 
 @app.route('/')
 def main() :
@@ -16,11 +19,13 @@ def req():
     if request.method == 'POST' :
         try:
             key = request.form['key']
-            con=sqlite3.connect("P1.db")
-            cur=con.cursor()
-            cur.execute("SELECT key FROM images WHERE key = ?", [key])
-            isNewKey = len(cur.fetchone()) == 0
-            if not isNewKey :
+            if 'key' in my_hash.keys():
+             myimg=my_hash.get(key)
+             con=sqlite3.connect("P1.db")
+             cur=con.cursor()
+             cur.execute("SELECT key FROM images WHERE key = ?", [key])
+             isNewKey = len(cur.fetchone()) == 0
+             if not isNewKey :
                 name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchone()
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
@@ -46,8 +51,11 @@ def upload():
             isNewKey = len(cur.fetchone()) == 0
             if(isNewKey) :
                 cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
+                my_hash.put(key,"image.filename")
+                
             else :
                 cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
+                my_hash["key"]="image.filename"
             con.commit()
             con.close()
         except:
@@ -76,19 +84,5 @@ def saveFile(savedFile, originalFile, originalFilePath) :
     file.save(savedFile)
     
 
-@app.route('/config', methods = ['POST','GET']) 
-def config():
-    if request.method == 'GET' :
-        try:
-            con=sqlite3.connect("P1.db")
-            cur=con.cursor()
-            cur.execute("SELECT key FROM images")
-            con.commit()
-            # con.close()
-        except:
-            return 'error'
-        finally:
-            return render_template('KeyList.html', keys = [str(val[0]) for val in cur.fetchall()])
-    return render_template('KeyList.html')
 if __name__ == '__main__':
     app.run(debug = True)
