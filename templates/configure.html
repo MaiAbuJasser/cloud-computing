@@ -56,15 +56,20 @@
 		</select>
 		<input type="key" class="input-box" placeholder="key" name="key">
 		<br></br>
-		<input type="key" class="input-box" placeholder="value" name="value">
+		<input type="file" class="input-box" placeholder="value" name="value">
 		<br></br>
 	<!-- <input type="policy(RR or LRU)" class="input-box" placeholder="policy(Random replacement or Least recently used)" name="policy(RR or LRU"> -->
       <br></br>
-    <button type= "Put" class="add-btn">Put</button>
-	<button type= "Get" class="add-btn">Get</button>
-	<button type= "clear" class="add-btn">Clear</button>
-	<button type= "clearAll" class="add-btn">Clear All</button>
-
+    <input type= "submit" value="Put" name="put">
+	<input type= "submit" value="Get" name="get">
+	<input type= "submit" value="Clear" name="clear">
+	<input type= "submit" value="Clear All" name="clearAll">
+	<br></br>
+	{% if user_image == null %}
+		 <h3>{{ keyCheck }}</h3>
+	{% else %} 
+		 <img src="{{  user_image  }}">
+	{% endif %} 
 	</form>
 	</div>
 	</body>
