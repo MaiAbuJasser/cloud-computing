@@ -3,7 +3,6 @@ import os
 from lib2to3.pytree import convert
 import sqlite3
 from flask import Flask,render_template,request,flash,redirect, session,url_for, json
-from app import main, memcache
 
 app = Flask(__name__)
 path = '.\\static\\'
@@ -86,17 +85,7 @@ def saveFile(savedFile, originalFile, originalFilePath) :
 def config():
     if request.method == 'POST' :
         try:
-            cap = request.form["Capacity in MB"]
-            while cap != memcache.__len__ :
-                if request.button['Put'] :
-                    main.put()
-                    print(memcache)
-                elif request.button['Get'] :
-                    main.get(memcache)
-                elif request.button['clear'] :
-                    main.clear(memcache)
-                elif request.button['clearAll'] :
-                    main.clearAll(memcache)
+            print("")
         except:
             return 'error'
         finally:
