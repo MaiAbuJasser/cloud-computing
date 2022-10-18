@@ -8,6 +8,7 @@ from app import main, memcache
 app = Flask(__name__)
 path = '.\\static\\'
 
+
 @app.route('/')
 def main() :
     return render_template("index.html")
