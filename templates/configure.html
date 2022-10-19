@@ -11,7 +11,7 @@
 	<title> Configure</title>
 
 </head>
-	<header>
+<header>
 <nav class="navbar navbar-expand-custom navbar-mainbg">
         <a class="navbar-brand navbar-logo" href="#">Image mem-cache</a>
         <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,24 +21,24 @@
             <ul class="navbar-nav ml-auto">
                 <div class="hori-selector"><div class="left"></div><div class="right"></div></div>
                 <li class="nav-item">
-                    <a href="/" class="nav-link" href="javascript:void(0);"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+                    <a href="index.html" class="nav-link" href="javascript:void(0);"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="/upload" class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Upload</a>
+                    <a href="upload.html" class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Upload</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/request" class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Request</a>
+                    <a href="request.html" class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Request</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/list" class="nav-link" href="javascript:void(0);"><i class="far fa-calendar-alt"></i>Key List</a>
+                    <a href="keyList.html" class="nav-link" href="javascript:void(0);"><i class="far fa-calendar-alt"></i>Key List</a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="/configure" class="nav-link" href="javascript:void(0);"><i class="far fa-copy"></i>Configure</a>
+                    <a href="configure.html" class="nav-link" href="javascript:void(0);"><i class="far fa-copy"></i>Configure</a>
                 </li>
 <li class="nav-item">
-                    <a href="/statistic" class="nav-link" href="javascript:void(0);"><i class="far fa-chart-bar"></i>Statistic</a>
+                    <a href="statistic.html" class="nav-link" href="javascript:void(0);"><i class="far fa-chart-bar"></i>Statistic</a>
                 </li>
             </ul>
         </div>
@@ -51,16 +51,16 @@
 	<input type="Capacity in MB" class="input-box" placeholder="Capacity in MB" name="Capacity in MB">
 		<br></br>
 		<select name="policy" class="input-box">
+			<option value="1">choose policy--</option>
 			<option value="1">Random replacement</option>
 			<option value="2">Least recently used</option>
 		</select>
-		<input type="key" class="input-box" placeholder="key" name="key">
-		<br></br>
-	<!-- <input type="policy(RR or LRU)" class="input-box" placeholder="policy(Random replacement or Least recently used)" name="policy(RR or LRU"> -->
       <br></br>
-	<input type= "submit" value="Clear" name="clear">
-	<input type= "submit" value="Clear All" name="clearAll">
-	<br></br>
+	  <input type="key" class="input-box" placeholder="Enter spcific Key if you want to delate" name="key">
+	        <br></br>
+        <button type= "clear" class="add-btn">Clear</button>
+	<button type= "clearall" class="add-btn">Clear All</button>
+
 	</form>
 	</div>
 	</body>
@@ -88,7 +88,7 @@
    --box-shadow: 2px 2px 18px rgb(14 52 54 / 15%);
 }
 img {
-	width: 100%;
+	width: 60%;
 }
 body {
 	color: var(--text-color) ;
@@ -184,19 +184,19 @@ body{
 
 .input-box{
 	border-radius: 20px;
-	padding: 40px;
+	padding: 10px;
 	margin: 10px 0;
-	width: 40%;
+	width: 25%;
 	border: 1px solid #999;
 	outline: none;
 }
 button{
 	color: #fff;
-	width: 20%;
+	width: 10%;
 	padding: 10px;
-	border-radius: 20px;
-	font-size: 15px;
-	margin: 10px 0;
+	border-radius: 15px;
+	font-size: 12px;
+	margin: 8px 0;
 	border: none;
 	outline: none;
 	cursor: pointer;
