@@ -13,17 +13,17 @@
 </head>
 <header>
 	<nav class="navbar navbar-expand-custom navbar-mainbg">
-		<a class="navbar-brand navbar-logo" href="#">Image mem-cache</a>
+		<a class="navbar-brand navbar-logo" href="">Image mem-cache</a>
 		<button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 		<i class="fas fa-bars text-white"></i>
 		</button>
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav ml-auto">
 				<div class="hori-selector"><div class="left"></div><div class="right"></div></div>
-				<li class="nav-item">
+				<li class="nav-item active">
 					<a class="nav-link" href="/"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
 				</li>
-				<li class="nav-item active">
+				<li class="nav-item">
 					<a class="nav-link" href="/upload"><i class="far fa-address-book"></i>Upload</a>
 				</li>
 				<li class="nav-item">
@@ -34,9 +34,9 @@
 				</li>
 
 				<li class="nav-item">
-					<a class="nav-link" href="/config"><i class="far fa-copy"></i>Configure</a>
-				</li>
-<li class="nav-item">
+					<a class="nav-link" href="/configure"><i class="far fa-copy"></i>Configure</a>
+				</li>	
+				<li class="nav-item">
 					<a class="nav-link" href="/static"><i class="far fa-chart-bar"></i>Statistic</a>
 				</li>
 			</ul>
@@ -50,7 +50,6 @@
 	<input type="Capacity in MB" class="input-box" placeholder="Capacity in MB" name="Capacity in MB">
 		<br></br>
 		<select name="policy" class="input-box">
-			<option value="1">choose policy--</option>
 			<option value="1">Random replacement</option>
 			<option value="2">Least recently used</option>
 		</select>
@@ -58,7 +57,7 @@
 	  <input type="key" class="input-box" placeholder="Enter spcific Key if you want to delate" name="key">
 	        <br></br>
         <button type= "clear" class="add-btn">Clear</button>
-	<button type= "clearall" class="add-btn">Clear All</button>
+	<button type= "clearAll" class="add-btn">Clear All</button>
 
 	</form>
 	</div>
@@ -430,13 +429,14 @@ $(".navbar-toggler").click(function(){
 jQuery(document).ready(function($){
 	// Get current path and find target link
 	var path = window.location.pathname.split("/").pop();
-
+	var route = path.split(".")[0]
+	print(route)
 	// Account for home page with empty path
 	if ( path == '' ) {
-		path = 'index.html';
+		path = '/';
 	}
 
-	var target = $('#navbarSupportedContent ul li a[href="'+path+'"]');
+	var target = $('#navbarSupportedContent ul li a[href="' + route + '"]');
 	// Add active class to target link
 	target.parent().addClass('active');
 });

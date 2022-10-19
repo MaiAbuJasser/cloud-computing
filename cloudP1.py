@@ -16,28 +16,28 @@ hit = 0
 miss = 0
 hitRate = 0
 missRate = 0
-
+policyy = '1'
 
 @app.route('/')
 def main() :
     return render_template("index.html")
 
 @app.route('/request', methods = ['GET','POST'])
-def req():
+def req():  
+    global miss, hit, policyy, hitRate, missRate, memcache
     if request.method == 'POST' :
         try:
             key = request.form['key']
             con = sqlite3.connect("P1.db")
             if key in memcache.keys() :
-                print("memcache")
                 name = memcache[key]
                 if policyy == '2' :
                     leastRecentlyUsed(key)
-                hit+=hit
-                hitRate += hit / (hit+miss)
+                hit = hit + 1
+                hitRate += hit / (hit + miss)
                 return render_template('request.html', user_image = ('..\\static\\' + name))
-            miss+=miss
-            missRate += miss / (hit+miss)
+            miss = miss + 1
+            missRate += miss / (hit + miss)
             cur = con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
@@ -57,34 +57,33 @@ def req():
 
 @app.route('/upload', methods = ['POST','GET']) 
 def upload():
+    global miss, hit, policyy, hitRate, missRate, memcache
     if request.method == 'POST' :
         try:
             key = request.form["key1"]
             image=request.files["image"]
             imagePath = request.form["image1"]
-            myImg = saveFile(path + image.filename, image.filename, imagePath)
+            saveFile(path + image.filename, image.filename, imagePath)
             con=sqlite3.connect("P1.db")
             cur=con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
             if(isNewKey) :
                 cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
-                memcache.put(key,"image.filename")
-                miss+=miss
-                missRate += miss / (hit+miss)
                 done = "Upload Successfully"
-                memcache.put(key, image.filename)
-                
+                con.commit()
+                miss += miss
+                missRate += miss / (hit+miss)                
             else :
                 cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
                 done = "Update Successfully"
-                memcache[key] = image.filename
+                con.commit()
             if policyy == '1' :
                 randomPolicy()
             else :
                 leastRecentlyUsed(key)
-            con.commit()
             con.close()
+            memcache[key] = image.filename
             
         except:
             return 'error'
@@ -94,6 +93,7 @@ def upload():
 
 @app.route('/list', methods = ['POST','GET']) 
 def keyList():
+    global miss, hit, policyy, hitRate, missRate, memcache
     if request.method == 'GET' :
         try:
             con=sqlite3.connect("P1.db")
@@ -112,14 +112,14 @@ def saveFile(savedFile, originalFile, originalFilePath) :
     file.save(savedFile)
     
 
-@app.route('/config', methods = ['POST','GET']) 
+@app.route('/configure', methods = ['POST','GET']) 
 def config():
+    global miss, hit, policyy, hitRate, missRate, memcache
     if request.method == 'POST' :
        try:
             key = request.form["key"]
             global capacity
             capacity = request.form["Capacity in MB"]
-            global policyy
             policyy = request.form["policy"]
 
             if request.form["clear"] == 'Clear' :
@@ -134,10 +134,12 @@ def config():
     return render_template('configure.html')
 
 def randomPolicy() :
+    global miss, hit, policyy, hitRate, missRate, memcache
     if len(memcache) > capacity:
         random.choice(list(memcache.values()))
 
 def leastRecentlyUsed(key) :
+    global miss, hit, policyy, hitRate, missRate, memcache
     memcache.move_to_end(key)
     if len(memcache) > capacity:
         memcache.popitem(last = False)
