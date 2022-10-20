@@ -147,8 +147,8 @@ def config():
     if request.method == 'POST' :
        try:
             key = request.form["key"]
-            global capacity
-            capacity = request.form["Capacity in MB"]
+            global max_capacity
+            max_capacity = request.form["Capacity in MB"]
             policyy = request.form["policy"]
 
             if request.form["clear"] == 'Clear' :
