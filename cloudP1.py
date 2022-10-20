@@ -20,6 +20,7 @@ policyy = '1'
 con=sqlite3.connect("P1.db")
 cur=con.cursor()
 cur.execute("INSERT INTO cache (id,policy,hitrate,missrate,capacity,items) VALUES(?,?,?,?,?,?)",(1,'random',0,0,0,0)
+con.commit()
 
 
 @app.route('/')
