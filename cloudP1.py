@@ -30,7 +30,7 @@ def main() :
 
 @app.route('/request', methods = ['GET','POST'])
 def req():  
-    global miss, hit, policyy, hitRate, missRate, memcache
+    global miss, hit, policyy, hitRate, missRate, memcache,totalSize
     if request.method == 'POST' :
         try:
             key = request.form['key']
@@ -143,7 +143,7 @@ def saveFile(savedFile, originalFile, originalFilePath) :
 
 @app.route('/configure', methods = ['POST','GET']) 
 def config():
-    global miss, hit, policyy, hitRate, missRate, memcache
+    global miss, hit, policyy, hitRate, missRate, memcache,totalSize
     if request.method == 'POST' :
        try:
             key = request.form["key"]
@@ -155,7 +155,7 @@ def config():
                 del memcache[key]
             elif request.form["clearAll"] == 'Clear All' :
                 memcache.clear()
-                cur.execute("UPDATE cahce SET capacity = ? WHERE id = ?", (0, 1))
+                cur.execute("UPDATE cahce SET capacity = ?, items = ? WHERE id = ?", (0,0,1))
                 con.commit()
        
        except:
@@ -165,7 +165,7 @@ def config():
     return render_template('configure.html')
 
 def randomPolicy() :
-    global miss, hit, policyy, hitRate, missRate, memcache
+    global miss, hit, policyy, hitRate, missRate, memcache,totalSize
     if len(memcache) > capacity:
         random.choice(list(memcache.values()))
 
