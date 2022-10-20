@@ -84,16 +84,16 @@ def upload():
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
             if(isNewKey) :
-                cur.execute("INSERT INTO images (key,image,size) VALUES(?,?)",(key, image.filename,sizeinBytes))
+                cur.execute("INSERT INTO images (key,image,size) VALUES(?,?,?)",(key, image.filename,sizeinBytes))
                 miss += miss
                 missRate += miss / (hit+miss)
                 if(max_capacity < totalSize)):
-                 memcache.put('key','image.filename')
-                 cur.execute("UPDATE cahce SET missrate = ? WHERE id = ?", (missRate, 1))
-                 con.commit()
-                 done = "Upload Successfully"
+                  memcache.put('key','image.filename')
+                  cur.execute("UPDATE cahce SET missrate = ?,capacity = ? WHERE id = ?", (missRate,totalSize,1))
+                  con.commit()
+                  done = "Upload Successfully"
                 else:
-                 print('you have exceeded the max capacity you entered !') 
+                  print('you have exceeded the max capacity you entered !') 
                 
             else :
                 cur.execute("UPDATE images SET image = ?,size = ? WHERE key = ?", (image.filename,sizeinBytes, key))
@@ -101,11 +101,13 @@ def upload():
                 con.commit()
             if policyy == '1' :
                 randomPolicy()
-                cur.execute("UPDATE cahce SET policy = ? WHERE id = ?", ('random', 1))
+                totalSize = cur.execute("SELECT SUM(sizeinBytes) FROM images")
+                cur.execute("UPDATE cahce SET policy = ?, capacity = ? WHERE id = ?", ('random',totalSize,1))
                 con.commit()
             else :
                 leastRecentlyUsed(key)
-                cur.execute("UPDATE cahce SET policy = ? WHERE id = ?", ('LRU', 1))
+                totalSize = cur.execute("SELECT SUM(sizeinBytes) FROM images")
+                cur.execute("UPDATE cahce SET policy = ?, capacity = ? WHERE id = ?", ('LRU',totalSize,1))
                 con.commit()
             con.close()
             memcache[key] = image.filename
