@@ -55,7 +55,7 @@ def req():
             con.close()
     return render_template('request.html')
 
-@app.route('/upload', methods = ['POST','GET']) 
+@app.route('/upload.html', methods = ['POST','GET']) 
 def upload():
     global miss, hit, policyy, hitRate, missRate, memcache
     if request.method == 'POST' :
@@ -112,7 +112,7 @@ def saveFile(savedFile, originalFile, originalFilePath) :
     file.save(savedFile)
     
 
-@app.route('/configure', methods = ['POST','GET']) 
+@app.route('/configure.html', methods = ['POST','GET']) 
 def config():
     global miss, hit, policyy, hitRate, missRate, memcache
     if request.method == 'POST' :
