@@ -40,11 +40,13 @@ def req():
                 name = memcache[key]
                  hit = hit + 1
                  hitRate += hit / (hit + miss)
-                 if(max_capacity <
-                if policyy == '2' :
-                    leastRecentlyUsed(key)
-                cur.execute("UPDATE cahce SET hitrate = ? WHERE id = ?", (hitRate, 1))
-                con.commit()
+                 if(max_capacity < totalSize):
+                  if policyy == '2' :
+                      leastRecentlyUsed(key)
+                      totalSize = cur.execute("SELECT SUM(sizeinBytes) FROM images")
+                      cur.execute("UPDATE cahce SET policy = ?, capacity = ? WHERE id = ?", ('random',totalSize,1))
+                      cur.execute("UPDATE cahce SET hitrate = ? WHERE id = ?", (hitRate, 1))
+                      con.commit()
                 return render_template('request.html', user_image = ('..\\static\\' + name))
             miss = miss + 1
             missRate += miss / (hit + miss)
@@ -87,7 +89,7 @@ def upload():
                 cur.execute("INSERT INTO images (key,image,size) VALUES(?,?,?)",(key, image.filename,sizeinBytes))
                 miss += miss
                 missRate += miss / (hit+miss)
-                if(max_capacity < totalSize)):
+                if(max_capacity < totalSize):
                   memcache.put('key','image.filename')
                   cur.execute("UPDATE cahce SET missrate = ?,capacity = ? WHERE id = ?", (missRate,totalSize,1))
                   con.commit()
