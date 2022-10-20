@@ -17,6 +17,7 @@ miss = 0
 hitRate = 0
 missRate = 0
 policyy = '1'
+totalSize = 0
 con=sqlite3.connect("P1.db")
 cur=con.cursor()
 cur.execute("INSERT INTO cache (id,policy,hitrate,missrate,capacity,items) VALUES(?,?,?,?,?,?)",(1,'random',0,0,0,0)
@@ -37,10 +38,11 @@ def req():
             cur=con.cursor()
             if key in memcache.keys() :
                 name = memcache[key]
+                 hit = hit + 1
+                 hitRate += hit / (hit + miss)
+                 if(max_capacity <
                 if policyy == '2' :
                     leastRecentlyUsed(key)
-                hit = hit + 1
-                hitRate += hit / (hit + miss)
                 cur.execute("UPDATE cahce SET hitrate = ? WHERE id = ?", (hitRate, 1))
                 con.commit()
                 return render_template('request.html', user_image = ('..\\static\\' + name))
@@ -68,7 +70,7 @@ def req():
 
 @app.route('/upload', methods = ['POST','GET']) 
 def upload():
-    global miss, hit, policyy, hitRate, missRate, memcache
+    global miss, hit, policyy, hitRate, missRate, memcache,totalSize
     if request.method == 'POST' :
         try:
             key = request.form["key1"]
@@ -76,6 +78,7 @@ def upload():
             imagePath = request.form["image1"]
             saveFile(path + image.filename, image.filename, imagePath)
             sizeinBytes = os.path.getsize(imagePath)
+            totalSize += sizeinBytes
             con=sqlite3.connect("P1.db")
             cur=con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
@@ -84,11 +87,13 @@ def upload():
                 cur.execute("INSERT INTO images (key,image,size) VALUES(?,?)",(key, image.filename,sizeinBytes))
                 miss += miss
                 missRate += miss / (hit+miss)
-                cur.execute("UPDATE cahce SET missrate = ? WHERE id = ?", (missRate, 1))
-                con.commit()
-                done = "Upload Successfully"
-
- 
+                if(max_capacity < totalSize)):
+                 memcache.put('key','image.filename')
+                 cur.execute("UPDATE cahce SET missrate = ? WHERE id = ?", (missRate, 1))
+                 con.commit()
+                 done = "Upload Successfully"
+                else:
+                 print('you have exceeded the max capacity you entered !') 
                 
             else :
                 cur.execute("UPDATE images SET image = ?,size = ? WHERE key = ?", (image.filename,sizeinBytes, key))
