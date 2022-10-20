@@ -75,12 +75,13 @@ def upload():
             image=request.files["image"]
             imagePath = request.form["image1"]
             saveFile(path + image.filename, image.filename, imagePath)
+            sizeinBytes = os.path.getsize(imagePath)
             con=sqlite3.connect("P1.db")
             cur=con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
             if(isNewKey) :
-                cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
+                cur.execute("INSERT INTO images (key,image,size) VALUES(?,?)",(key, image.filename,sizeinBytes))
                 miss += miss
                 missRate += miss / (hit+miss)
                 cur.execute("UPDATE cahce SET missrate = ? WHERE id = ?", (missRate, 1))
@@ -90,7 +91,7 @@ def upload():
  
                 
             else :
-                cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
+                cur.execute("UPDATE images SET image = ?,size = ? WHERE key = ?", (image.filename,sizeinBytes, key))
                 done = "Update Successfully"
                 con.commit()
             if policyy == '1' :
@@ -138,7 +139,7 @@ def config():
        try:
             key = request.form["key"]
             global capacity
-            #capacity = request.form["Capacity in MB"]
+            capacity = request.form["Capacity in MB"]
             policyy = request.form["policy"]
 
             if request.form["clear"] == 'Clear' :
