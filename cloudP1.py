@@ -17,6 +17,10 @@ miss = 0
 hitRate = 0
 missRate = 0
 policyy = '1'
+con=sqlite3.connect("P1.db")
+cur=con.cursor()
+cur.execute("INSERT INTO cache (id,policy,hitrate,missrate,capacity,items) VALUES(?,?,?,?,?,?)",(1,'random',0,0,0,0)
+
 
 @app.route('/')
 def main() :
@@ -49,7 +53,7 @@ def req():
                 name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
                 if policyy == '2' :
                     leastRecentlyUsed(key)
-                    cur.execute("UPDATE cahce SET policy = ? WHERE id = ?", (LRU, 1))
+                    cur.execute("UPDATE cahce SET policy = ? WHERE id = ?", ('LRU', 1))
                     con.commit()
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
@@ -90,11 +94,11 @@ def upload():
                 con.commit()
             if policyy == '1' :
                 randomPolicy()
-                cur.execute("UPDATE cahce SET policy = ? WHERE id = ?", (random, 1))
+                cur.execute("UPDATE cahce SET policy = ? WHERE id = ?", ('random', 1))
                 con.commit()
             else :
                 leastRecentlyUsed(key)
-                cur.execute("UPDATE cahce SET policy = ? WHERE id = ?", (LRU, 1))
+                cur.execute("UPDATE cahce SET policy = ? WHERE id = ?", ('LRU', 1))
                 con.commit()
             con.close()
             memcache[key] = image.filename
