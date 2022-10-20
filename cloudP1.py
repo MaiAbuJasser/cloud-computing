@@ -28,23 +28,29 @@ def req():
     if request.method == 'POST' :
         try:
             key = request.form['key']
-            con = sqlite3.connect("P1.db")
+            con=sqlite3.connect("P1.db")
+            cur=con.cursor()
             if key in memcache.keys() :
                 name = memcache[key]
                 if policyy == '2' :
                     leastRecentlyUsed(key)
                 hit = hit + 1
                 hitRate += hit / (hit + miss)
+                cur.execute("UPDATE cahce SET hitrate = ? WHERE id = ?", (hitRate, 1))
+                con.commit()
                 return render_template('request.html', user_image = ('..\\static\\' + name))
             miss = miss + 1
             missRate += miss / (hit + miss)
-            cur = con.cursor()
+            cur.execute("UPDATE cahce SET missrate = ? WHERE id = ?", (missRate, 1))
+            con.commit()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
             if not isNewKey :
                 name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
                 if policyy == '2' :
                     leastRecentlyUsed(key)
+                    cur.execute("UPDATE cahce SET policy = ? WHERE id = ?", (LRU, 1))
+                    con.commit()
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
                 return render_template('request.html', keyCheck = "key not found !")
@@ -70,18 +76,26 @@ def upload():
             isNewKey = len(cur.fetchall()) == 0
             if(isNewKey) :
                 cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key, image.filename))
-                done = "Upload Successfully"
-                con.commit()
                 miss += miss
-                missRate += miss / (hit+miss)                
+                missRate += miss / (hit+miss)
+                cur.execute("UPDATE cahce SET missrate = ? WHERE id = ?", (missRate, 1))
+                con.commit()
+                done = "Upload Successfully"
+
+ 
+                
             else :
                 cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename, key))
                 done = "Update Successfully"
                 con.commit()
             if policyy == '1' :
                 randomPolicy()
+                cur.execute("UPDATE cahce SET policy = ? WHERE id = ?", (random, 1))
+                con.commit()
             else :
                 leastRecentlyUsed(key)
+                cur.execute("UPDATE cahce SET policy = ? WHERE id = ?", (LRU, 1))
+                con.commit()
             con.close()
             memcache[key] = image.filename
             
@@ -119,13 +133,15 @@ def config():
        try:
             key = request.form["key"]
             global capacity
-            capacity = request.form["Capacity in MB"]
+            #capacity = request.form["Capacity in MB"]
             policyy = request.form["policy"]
 
             if request.form["clear"] == 'Clear' :
                 del memcache[key]
             elif request.form["clearAll"] == 'Clear All' :
                 memcache.clear()
+                cur.execute("UPDATE cahce SET capacity = ? WHERE id = ?", (0, 1))
+                con.commit()
        
        except:
             return 'error'
