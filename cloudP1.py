@@ -41,34 +41,28 @@ def req():
             key = request.form['key']
             if key in memcache.keys() :
                 name = memcache[key]
+                leastRecentlyUsed(key)
                 hit = hit + 1
-                hitRate = hitRate + (hit / (hit + miss))
-                if(capacity < totalSize):
-                  if policyy == '2' :
-                      leastRecentlyUsed(key)
-                      totalImagesSize()
-                      cur.execute("UPDATE cache SET policy = ?, capacity = ? hitRate = ? WHERE cache.id", (policyy, totalSize, hitRate))
-                      con.commit()
+                hitRate = hitRate + ( hit / (hit + miss))
+                cur.execute("UPDATE cahce SET hitrate = ? WHERE id = ?", (hitRate,1))
+                con.commit()
                 return render_template('request.html', user_image = ('..\\static\\' + name))
             miss = miss + 1
             missRate = missRate + (miss / (hit + miss))
-            cur.execute("UPDATE cache SET missRate = ? WHERE cache.id", (missRate))
+            cur.execute("UPDATE cache SET missRate = ? WHERE id = ?", (missRate, 1))
             con.commit()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
             if not isNewKey :
                 name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
-                if policyy == '2' :
-                    leastRecentlyUsed(key)
-                    cur.execute("UPDATE cache SET policy = ? WHERE cache.id", (policyy))
-                    con.commit()
+                memcache.put(key, name[0][0])
+                leastRecentlyUsed(key)
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
                 return render_template('request.html', keyCheck = "key not found !")
         except:
             return("error occur")
         finally:
-            con.commit()
             con.close()
     return render_template('request.html')
 
@@ -76,7 +70,7 @@ def req():
 def upload():
     global miss, hit, policyy, hitRate, missRate, memcache, totalSize
     if request.method == 'POST' :
-        # try:
+        try:
             con = sqlite3.connect("P1.db")
             curr = con.cursor() 
             key = request.form["key1"]
@@ -101,9 +95,9 @@ def upload():
             randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
             memcache[key] = image.filename
             print(memcache)
-        # except:
-        #     return 'error'
-        # finally:
+        except:
+            return 'error'
+        finally:
             return render_template('upload.html', done = done)
     return render_template('upload.html')
 
