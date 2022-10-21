@@ -44,7 +44,7 @@ def req():
                 leastRecentlyUsed(key)
                 hit = hit + 1
                 hitRate = hitRate + ( hit / (hit + miss))
-                cur.execute("UPDATE cahce SET hitrate = ? WHERE id = ?", (hitRate,1))
+                cur.execute("UPDATE cache SET hitRate = ? WHERE id = ?", (hitRate,1))
                 con.commit()
                 return render_template('request.html', user_image = ('..\\static\\' + name))
             miss = miss + 1
