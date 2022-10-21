@@ -1,31 +1,36 @@
-from asyncio.windows_events import NULL
-from glob import glob
-from re import S
 from PIL import Image
 import os
-from lib2to3.pytree import convert
 import sqlite3
-from flask import Flask,render_template,request,flash,redirect, session,url_for, json
+from flask import Flask,render_template,request
 import random
 from collections import OrderedDict
+from apscheduler.schedulers.background import BackgroundScheduler
+from io import BytesIO 
 
+def insertCacheTableData() :
+    global policyy, hitRate, missRate, capacity, memcache
+    con = sqlite3.connect("P1.db")
+    cur = con.cursor()    
+    cur.execute("INSERT INTO cache (policy,hitRate,missRate,capacity,items) VALUES(?,?,?,?,?)",(policyy, hitRate, missRate, capacity, len(memcache)))
+    con.commit()
+    con.close()
+
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(insertCacheTableData,'interval',seconds=5)
+sched.start()
+
+# atexit.register(lambda: scheduler.shutdown())
 
 app = Flask(__name__)
 path = '.\\static\\'
-memcache = {}
+memcache = OrderedDict()
 hit = 0
 miss = 0
 hitRate = 0
 missRate = 0
 policyy = '1'
 totalSize = 0
-capacity = 100000
-sql = []
-con = sqlite3.connect("P1.db")
-cur = con.cursor()    
-cur.execute("INSERT INTO cache (policy,hitRate,missRate,capacity,items) VALUES(?,?,?,?,?)",(policyy, hitRate, missRate, capacity, len(memcache)))
-con.commit()
-con.close()
+capacity = 1000000
 
 @app.route('/')
 def main() :
@@ -35,7 +40,7 @@ def main() :
 def req():  
     global miss, hit, policyy, hitRate, missRate, memcache, totalSize, con, cur
     if request.method == 'POST' :
-        try:
+        # try:
             con = sqlite3.connect("P1.db")
             cur = con.cursor()    
             key = request.form['key']
@@ -44,26 +49,25 @@ def req():
                 leastRecentlyUsed(key)
                 hit = hit + 1
                 hitRate = hitRate + ( hit / (hit + miss))
-                cur.execute("UPDATE cache SET hitRate = ? WHERE id = ?", (hitRate,1))
                 con.commit()
-                return render_template('request.html', user_image = ('..\\static\\' + name))
-            miss = miss + 1
-            missRate = missRate + (miss / (hit + miss))
-            cur.execute("UPDATE cache SET missRate = ? WHERE id = ?", (missRate, 1))
-            con.commit()
-            cur.execute("SELECT key FROM images WHERE key = ?", [key])
-            isNewKey = len(cur.fetchall()) == 0
-            if not isNewKey :
-                name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
-                memcache.put(key, name[0][0])
-                leastRecentlyUsed(key)
-                return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
-                return render_template('request.html', keyCheck = "key not found !")
-        except:
-            return("error occur")
-        finally:
-            con.close()
+                miss = miss + 1
+                missRate = missRate + (miss / (hit + miss))
+                con.commit()
+                cur.execute("SELECT key FROM images WHERE key = ?", [key])
+                isNewKey = len(cur.fetchall()) == 0
+                if not isNewKey :
+                    name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()[0][0]
+                    memcache[key] = name
+                    leastRecentlyUsed(key)
+                else :
+                    return render_template('request.html', keyCheck = "key not found !")
+
+                return render_template('request.html', user_image = ('..\\static\\' + name))
+        # except:
+        #     return("error occur")
+        # finally:
+        #     con.close()
     return render_template('request.html')
 
 @app.route('/upload', methods = ['POST','GET']) 
@@ -72,29 +76,29 @@ def upload():
     if request.method == 'POST' :
         try:
             con = sqlite3.connect("P1.db")
-            curr = con.cursor() 
+            cur = con.cursor() 
             key = request.form["key1"]
             image = request.files["image"]
             imagePath = request.form["image1"]
-            sizeInBytes = os.path.getsize(imagePath)
+            sizeInBytes = os.stat(imagePath + "\\" + image.filename).st_size / 1000
+            print(sizeInBytes)
             totalSize = totalSize + sizeInBytes
-            curr.execute("SELECT key FROM images WHERE key = ?", [key])
-            isNewKey = len(curr.fetchall()) == 0
+            cur.execute("SELECT key FROM images WHERE key = ?", [key])
+            isNewKey = len(cur.fetchall()) == 0
             if(isNewKey) :
-                curr.execute("INSERT INTO images (key,image,size) VALUES(?,?,?)",(key, image.filename, sizeInBytes))            
-                curr.execute("UPDATE cache SET missRate = ?,capacity = ? WHERE cache.id", (missRate, totalSize))
+                cur.execute("INSERT INTO images (key,image,size) VALUES(?,?,?)",(key, image.filename, sizeInBytes))            
                 done = "Upload Successfully"
             else :
-                curr.execute("UPDATE images SET image = ?,size = ? WHERE key = ?", (image.filename, sizeInBytes, key))
+                cur.execute("UPDATE images SET image = ?,size = ? WHERE key = ?", (image.filename, sizeInBytes, key))
                 done = "Update Successfully"
             con.commit()
             con.close()
+            saveFile(path + image.filename, image.filename, imagePath)
             miss = miss + 1
             missRate = missRate + (miss / (hit + miss))
             totalImagesSize()
             randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
             memcache[key] = image.filename
-            print(memcache)
         except:
             return 'error'
         finally:
@@ -137,7 +141,6 @@ def config():
                 del memcache[key]
             elif request.form["clearAll"] == 'Clear All' :
                 memcache.clear()
-                cur.execute("UPDATE cache SET capacity = ?, items = ? WHERE cache.id", (0, len(memcache)))
                 con.commit()
        
        except:
@@ -157,6 +160,7 @@ def leastRecentlyUsed(key) :
     if totalSize > capacity:
         memcache.popitem(last = False)
 
+# NEED EDIT
 def totalImagesSize() :
     global memcache, totalSize
     con = sqlite3.connect("P1.db")
