@@ -38,6 +38,7 @@ def req():
             cur=con.cursor()
             if key in memcache.keys() :
                 name = memcache[key]
+                leastRecentlyUsed(key)
                 hit = hit + 1
                 hitRate += hit / (hit + miss)
                 cur.execute("UPDATE cahce SET hitrate = ? WHERE id = ?", (hitRate,1))
