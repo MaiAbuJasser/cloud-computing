@@ -19,7 +19,7 @@
 </head>
 <header>
 	<nav class="navbar navbar-expand-custom navbar-mainbg">
-		<a class="navbar-brand navbar-logo" href="#">Image mem-cache</a>
+		<a class="navbar-brand navbar-logo" href="/">Image mem-cache</a>
 		<button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 		<i class="fas fa-bars text-white"></i>
 		</button>
@@ -457,8 +457,6 @@ $(".navbar-toggler").click(function(){
 jQuery(document).ready(function($){
 	// Get current path and find target link
 	var path = window.location.pathname.split("/").pop();
-	var route = path.split(".")[0]
-	print(route)
 	// Account for home page with empty path
 	if ( path == '' ) {
 		path = 'index.html';
