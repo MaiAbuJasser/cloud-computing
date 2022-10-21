@@ -40,12 +40,12 @@ def req():
                 name = memcache[key]
                 leastRecentlyUsed(key)
                 hit = hit + 1
-                hitRate += hit / (hit + miss)
+                hitRate = hitRate + ( hit / (hit + miss))
                 cur.execute("UPDATE cahce SET hitrate = ? WHERE id = ?", (hitRate,1))
                 con.commit()
                 return render_template('request.html', user_image = ('..\\static\\' + name))
             miss = miss + 1
-            missRate += miss / (hit + miss)
+            missRate = missRate + (miss / (hit + miss))
             cur.execute("UPDATE cahce SET missrate = ? WHERE id = ?", (missRate, 1))
             con.commit()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
@@ -71,15 +71,15 @@ def upload():
             imagePath = request.form["image1"]
             saveFile(path + image.filename, image.filename, imagePath)
             sizeinBytes = os.path.getsize(imagePath)
-            totalSize += sizeinBytes
+            totalSize = totalSize + sizeinBytes
             con=sqlite3.connect("P1.db")
             cur=con.cursor()
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
             if(isNewKey) :
                 cur.execute("INSERT INTO images (key,image,size) VALUES(?,?,?)",(key, image.filename,sizeinBytes))
-                miss += miss
-                missRate += miss / (hit+miss)
+                miss = miss + 1
+                missRate = missRate + (miss / (hit + miss))
                 if(max_capacity < totalSize):
                   memcache.put('key','image.filename')
                   cur.execute("UPDATE cahce SET missrate = ?,capacity = ? WHERE id = ?", (missRate,totalSize,1))
