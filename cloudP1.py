@@ -44,8 +44,11 @@ def req():
                   if policyy == '2' :
                       leastRecentlyUsed(key)
                       totalSize = cur.execute("SELECT SUM(sizeinBytes) FROM images")
-                      cur.execute("UPDATE cahce SET policy = ?, capacity = ? WHERE id = ?", ('random',totalSize,1))
-                      cur.execute("UPDATE cahce SET hitrate = ? WHERE id = ?", (hitRate, 1))
+                      cur.execute("UPDATE cahce SET policy = ?, capacity = ?, hitrate = ? WHERE id = ?", ('LRU',totalSize,hitRate,1))
+                      con.commit()
+                  else: #random policy is selected
+                      totalSize = cur.execute("SELECT SUM(sizeinBytes) FROM images")
+                      cur.execute("UPDATE cahce SET policy = ?, capacity = ?, hitrate = ? WHERE id = ?", ('random',totalSize,hitRate,1))
                       con.commit()
                 return render_template('request.html', user_image = ('..\\static\\' + name))
             miss = miss + 1
@@ -56,17 +59,12 @@ def req():
             isNewKey = len(cur.fetchall()) == 0
             if not isNewKey :
                 name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
-                if policyy == '2' :
-                    leastRecentlyUsed(key)
-                    cur.execute("UPDATE cahce SET policy = ? WHERE id = ?", ('LRU', 1))
-                    con.commit()
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
                 return render_template('request.html', keyCheck = "key not found !")
         except:
             return("error occur")
         finally:
-            con.commit()
             con.close()
     return render_template('request.html')
 
