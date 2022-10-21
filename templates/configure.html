@@ -19,7 +19,7 @@
 </head>
 <header>
 	<nav class="navbar navbar-expand-custom navbar-mainbg">
-		<a class="navbar-brand navbar-logo" href="#">Image mem-cache</a>
+		<a class="navbar-brand navbar-logo" href="/">Image mem-cache</a>
 		<button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 		<i class="fas fa-bars text-white"></i>
 		</button>
@@ -65,7 +65,7 @@
 			<option value="2">Least recently used</option>
 		</select>
       <br></br>
-	  <input type="key" class="input-box" placeholder="Enter spcific Key if you want to delate" name="key">
+	  <input type="key" class="input-box" placeholder="Enter specific Key if you want to delate" name="key">
 	        <br></br>
 
 		<form action=" ">
@@ -453,13 +453,12 @@ $(".navbar-toggler").click(function(){
 jQuery(document).ready(function($){
 	// Get current path and find target link
 	var path = window.location.pathname.split("/").pop();
-
 	// Account for home page with empty path
 	if ( path == '' ) {
 		path = 'index.html';
 	}
 
-	var target = $('#navbarSupportedContent ul li a[href="'+path+'"]');
+	var target = $('#navbarSupportedContent ul li a[href="' + route + '"]');
 	// Add active class to target link
 	target.parent().addClass('active');
 });
