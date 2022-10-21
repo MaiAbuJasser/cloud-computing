@@ -20,7 +20,7 @@
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav ml-auto">
 				<div class="hori-selector"><div class="left"></div><div class="right"></div></div>
-				<li class="nav-item active">
+				<li class="nav-item">
 					<a class="nav-link" href="/"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
 				</li>
 				<li class="nav-item">
@@ -33,8 +33,8 @@
 					<a class="nav-link" href="/list"><i class="far fa-calendar-alt"></i>Key List</a>
 				</li>
 
-				<li class="nav-item">
-					<a class="nav-link" href="/configure.html"><i class="far fa-copy"></i>Configure</a>
+				<li class="nav-item active">
+					<a class="nav-link" href="/config"><i class="far fa-copy"></i>Configure</a>
 				</li>	
 				<li class="nav-item">
 					<a class="nav-link" href="/static"><i class="far fa-chart-bar"></i>Statistic</a>
@@ -429,14 +429,12 @@ $(".navbar-toggler").click(function(){
 jQuery(document).ready(function($){
 	// Get current path and find target link
 	var path = window.location.pathname.split("/").pop();
-	var route = path.split(".")[0]
-	print(route)
 	// Account for home page with empty path
 	if ( path == '' ) {
 		path = '/';
 	}
 
-	var target = $('#navbarSupportedContent ul li a[href="' + route + '"]');
+	var target = $('#navbarSupportedContent ul li a[href="' + path + '"]');
 	// Add active class to target link
 	target.parent().addClass('active');
 });
