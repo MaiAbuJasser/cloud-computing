@@ -52,6 +52,8 @@ def req():
             isNewKey = len(cur.fetchall()) == 0
             if not isNewKey :
                 name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()
+                memcache.put(key, name[0][0])
+                leastRecentlyUsed(key)
                 return render_template('request.html', user_image = ('..\\static\\' + name[0][0]))
             else :
                 return render_template('request.html', keyCheck = "key not found !")
