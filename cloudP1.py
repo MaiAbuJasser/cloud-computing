@@ -38,18 +38,10 @@ def req():
             cur=con.cursor()
             if key in memcache.keys() :
                 name = memcache[key]
-                 hit = hit + 1
-                 hitRate += hit / (hit + miss)
-                 if(max_capacity < totalSize):
-                  if policyy == '2' :
-                      leastRecentlyUsed(key)
-                      totalSize = cur.execute("SELECT SUM(sizeinBytes) FROM images")
-                      cur.execute("UPDATE cahce SET policy = ?, capacity = ?, hitrate = ? WHERE id = ?", ('LRU',totalSize,hitRate,1))
-                      con.commit()
-                  else: #random policy is selected
-                      totalSize = cur.execute("SELECT SUM(sizeinBytes) FROM images")
-                      cur.execute("UPDATE cahce SET policy = ?, capacity = ?, hitrate = ? WHERE id = ?", ('random',totalSize,hitRate,1))
-                      con.commit()
+                hit = hit + 1
+                hitRate += hit / (hit + miss)
+                cur.execute("UPDATE cahce SET hitrate = ? WHERE id = ?", (hitRate,1))
+                con.commit()
                 return render_template('request.html', user_image = ('..\\static\\' + name))
             miss = miss + 1
             missRate += miss / (hit + miss)
