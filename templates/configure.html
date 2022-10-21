@@ -1,4 +1,4 @@
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
 	<meta charset="UTF-8">
 	<link rel="icon" href="https://www.rawshorts.com/freeicons/wp-content/uploads/2017/01/blue_repicthousebase_1484336386-1.png" type="image/x-icon">
@@ -11,7 +11,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js">
 
 	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 	<title> Configure</title>
@@ -19,7 +19,7 @@
 </head>
 <header>
 	<nav class="navbar navbar-expand-custom navbar-mainbg">
-		<a class="navbar-brand navbar-logo" href="/">Image mem-cache</a>
+		<a class="navbar-brand navbar-logo" href="#">Image mem-cache</a>
 		<button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 		<i class="fas fa-bars text-white"></i>
 		</button>
@@ -45,10 +45,6 @@
                <li class="nav-item">
 					<a class="nav-link" href="/static"><i class="far fa-chart-bar"></i>Statistic</a>
 				</li>
-
-				<li class="nav-item">
-				<a href="#"><i class="glyphicon glyphicon-refresh"></i>ref</a>
-				</li>
 			</ul>
 		</div>
 	</nav>
@@ -65,17 +61,23 @@
 			<option value="2">Least recently used</option>
 		</select>
       <br></br>
-	  <input type="key" class="input-box" placeholder="Enter specific Key if you want to delate" name="key">
+	  <input type="key" class="input-box" placeholder="Enter spcific Key if you want to delate" name="key">
 	        <br></br>
+		 <input type="submit" value="Refresh" class="btn btn-default btn-sm" >
+         <input type="submit" value="Clear" class="btn btn-default btn-sm">
+		 <input type="submit" value="Clear All" class="btn btn-default btn-sm">
+		  <button type="button" class="btn btn-default btn-sm">
+          <span class="glyphicon glyphicon-refresh"></span> Refresh
+        </button>
+</form>
+<!--		<form action=" ">-->
+<!--			    <input type="submit" value="Submit" class="btn btn-default btn-sm">-->
+<!--		        <input type="Clear" value="Clear" class="btn btn-default btn-sm">-->
+<!--                <input type="Clear All" value="Clear All" class="btn btn-default btn-sm">-->
 
-		<form action=" ">
-		        <input type="Clear" value="Clear" class="btn btn-default btn-sm">
-                <input type="Clear All" value="Clear All" class="btn btn-default btn-sm">
-	     </form>
+<!--	     </form>-->
 
-<!--            <input type="clear" value="Clear" class="add-btn">-->
-<!--	    	<input type="clear all" value="Clear All" class="add-btn">-->
-	</form>
+
 	</div>
 	</body>
  </html>
@@ -453,12 +455,13 @@ $(".navbar-toggler").click(function(){
 jQuery(document).ready(function($){
 	// Get current path and find target link
 	var path = window.location.pathname.split("/").pop();
+
 	// Account for home page with empty path
 	if ( path == '' ) {
 		path = 'index.html';
 	}
 
-	var target = $('#navbarSupportedContent ul li a[href="' + route + '"]');
+	var target = $('#navbarSupportedContent ul li a[href="'+path+'"]');
 	// Add active class to target link
 	target.parent().addClass('active');
 });
