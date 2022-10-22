@@ -59,6 +59,9 @@ def req():
                     miss = miss + 1
                     missRate = missRate + (miss / (hit + miss))
                     memcache[key] = name
+                    if policy=='1':
+                      leastRecentlyUsed(key)
+                    randomPolicy()
                 else :
                     return render_template('request.html', keyCheck = "key not found !")
 
@@ -85,10 +88,10 @@ def upload():
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
             if(isNewKey) :
-                cur.execute("INSERT INTO images (key,image,size) VALUES(?,?,?)",(key, image.filename, sizeInBytes))            
+                cur.execute("INSERT INTO images (key,image,size) VALUES(?,?,?)",(key,image.filename))            
                 done = "Upload Successfully"
             else :
-                cur.execute("UPDATE images SET image = ?,size = ? WHERE key = ?", (image.filename, sizeInBytes, key))
+                cur.execute("UPDATE images SET image = ?,size = ? WHERE key = ?", (image.filename,key))
                 done = "Update Successfully"
             con.commit()
             con.close()
