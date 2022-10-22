@@ -92,11 +92,12 @@ def upload():
                 memcache[key] = image.filename
                 randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
             else :
-                cur.execute("UPDATE images SET image = ?,size = ? WHERE key = ?", (image.filename,key))
+                cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename,key))
                 done = "Update Successfully"
-                del memcache[key]
-                memcache[key] = image.filename
-                randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
+                if key in memcache.keys() :
+                 del memcache[key]
+                 memcache[key] = image.filename
+                 randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
             con.commit()
             con.close()
             #saveFile(path + image.filename, image.filename, imagePath)
