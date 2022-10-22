@@ -1,3 +1,4 @@
+import atexit
 from PIL import Image
 import os
 import sqlite3
@@ -13,12 +14,20 @@ def insertCacheTableData() :
     cur.execute("INSERT INTO cache (policy,hitRate,missRate,capacity,items) VALUES(?,?,?,?,?)",(policyy, hitRate, missRate, capacity, len(memcache)))
     con.commit()
     con.close()
+    
+def deleteDatabase() :
+    con = sqlite3.connect("P1.db")
+    cur = con.cursor()
+    cur.execute("DELETE from cache")
+    con.commit()
+    con.close()
 
 sched = BackgroundScheduler(daemon=True)
 sched.add_job(insertCacheTableData,'interval',seconds=5)
 sched.start()
 
-# atexit.register(lambda: scheduler.shutdown())
+atexit.register(deleteDatabase)
+atexit.register(lambda: sched.shutdown())
 
 app = Flask(__name__)
 path = '.\\static\\'
@@ -50,7 +59,6 @@ def req():
                 hitRate = hitRate + ( hit / (hit + miss))
                 con.commit()
             else :
-                con.commit()
                 cur.execute("SELECT key FROM images WHERE key = ?", [key])
                 isNewKey = len(cur.fetchall()) == 0
                 if not isNewKey :
@@ -58,13 +66,11 @@ def req():
                     miss = miss + 1
                     missRate = missRate + (miss / (hit + miss))
                     memcache[key] = name
-                    if policyy=='1':
-                      leastRecentlyUsed(key)
-                    randomPolicy()
+                    randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
                 else :
                     return render_template('request.html', keyCheck = "key not found !")
 
-                return render_template('request.html', user_image = ('..\\static\\' + name))
+            return render_template('request.html', user_image = ('..\\static\\' + name))
         except:
             return("error occur")
         finally:
@@ -89,27 +95,18 @@ def upload():
             if(isNewKey) :
                 cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key,image.filename))            
                 done = "Upload Successfully"
-                memcache[key] = image.filename
-                randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
             else :
                 cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename,key))
                 done = "Update Successfully"
                 if key in memcache.keys() :
                  del memcache[key]
-                 memcache[key] = image.filename
-                 randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
             con.commit()
             con.close()
-            miss = miss + 1
-            missRate = missRate + (miss / (hit + miss))
-            randomPolicy(key) if policyy == '1' else leastRecentlyUsed(key)
             memcache[key] = image.filename
-            #saveFile(path + image.filename, image.filename, imagePath)
-            miss = miss + 1
-            missRate = missRate + (miss / (hit + miss))
-            #totalImagesSize()
-            randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
-            #memcache[key] = image.filename
+            randomPolicy(key) if policyy == '1' else leastRecentlyUsed(key)
+            print(memcache)
+            # miss = miss + 1
+            # missRate = missRate + (miss / (hit + miss))
         except:
             return 'error'
         finally:
@@ -141,23 +138,27 @@ def saveFile(savedFile, originalFile, originalFilePath) :
 def config():
     global miss, hit, policyy, hitRate, missRate, memcache, totalSize, capacity
     if request.method == 'POST' :
-       try:
-            con = sqlite3.connect("P1.db")
-            cur = con.cursor()    
+    #    try:
             key = request.form["key"]
-            capacity = request.form["Capacity in MB"] * 1000
-            policyy = request.form["policy"]
-            if request.form["clear"] == 'Clear' :
+            clear = request.form.get('clear')
+            print(memcache)
+            if clear == 'Clear' :
                 del memcache[key]
-            elif request.form["clearAll"] == 'Clear All' :
+                print(memcache)
+                return render_template('configure.html', done = 'Clear key successfully')
+            elif request.form.get('clearAll') == 'Clear All' :
                 memcache.clear()
-                con.commit()       
-       except:
-            return 'error'
-       finally:
-            return render_template('configure.html')
+                return render_template('configure.html', done = 'Clear memory cache successfully')
+            # print(capacity)
+            policyy = request.form["policy"]
+            capacity = int(request.form["Capacity in MB"])
+            # print(capacity)
+    #    except:
+    #         return 'error'
+    #    finally:
+    #         return render_template('configure.html', done = '')
     return render_template('configure.html')
-
+       
 @app.route('/static', methods = ['POST','GET']) 
 def statistic():
     global miss, hit, policyy, hitRate, missRate, memcache, totalSize, capacity
@@ -171,18 +172,12 @@ def randomPolicy(key) :
 
 def leastRecentlyUsed(key) :
     global memcache, totalSize
+    print(key)
     memcache.move_to_end(key)
     if totalSize > capacity:
         totalSize = totalSize - os.stat(path + memcache[key]).st_size
         memcache.popitem(last = False)
 
-# NEED EDIT
-def totalImagesSize() :
-    global memcache, totalSize
-    con = sqlite3.connect("P1.db")
-    cur = con.cursor()    
-    totalSize = cur.execute("SELECT SUM(size) FROM images").fetchall()[0][0]
-    con.close()
 
 if __name__ == '__main__':
     app.run(debug = True)
