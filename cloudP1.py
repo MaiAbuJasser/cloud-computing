@@ -83,7 +83,7 @@ def req():
 def upload():
     global miss, hit, policyy, hitRate, missRate, memcache, totalSize
     if request.method == 'POST' :
-        # try:
+        try:
             con = sqlite3.connect("P1.db")
             cur = con.cursor() 
             key = request.form["key1"]
@@ -107,12 +107,10 @@ def upload():
             con.close()
             memcache[key] = image.filename
             randomPolicy(key) if policyy == '1' else leastRecentlyUsed(key)
-            # miss = miss + 1
-            # missRate = missRate + (miss / (hit + miss))
-        # except:
-        #     return 'error'
-        # finally:
-        #     return render_template('upload.html', done = done)
+        except:
+            return 'error'
+        finally:
+            return render_template('upload.html', done = done)
     return render_template('upload.html')
 
 @app.route('/list', methods = ['POST','GET']) 
@@ -124,7 +122,6 @@ def keyList():
             cur = con.cursor()    
             cur.execute("SELECT key FROM images")
             con.commit()
-            # con.close()
         except:
             return 'error'
         finally:
