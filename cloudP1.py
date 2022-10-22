@@ -5,7 +5,6 @@ from flask import Flask,render_template,request
 import random
 from collections import OrderedDict
 from apscheduler.schedulers.background import BackgroundScheduler
-from io import BytesIO 
 
 def insertCacheTableData() :
     global policyy, hitRate, missRate, capacity, memcache
@@ -40,7 +39,7 @@ def main() :
 def req():  
     global miss, hit, policyy, hitRate, missRate, memcache, totalSize, con, cur
     if request.method == 'POST' :
-        # try:
+        try:
             con = sqlite3.connect("P1.db")
             cur = con.cursor()    
             key = request.form['key']
@@ -64,10 +63,10 @@ def req():
                     return render_template('request.html', keyCheck = "key not found !")
 
                 return render_template('request.html', user_image = ('..\\static\\' + name))
-        # except:
-        #     return("error occur")
-        # finally:
-        #     con.close()
+        except:
+            return("error occur")
+        finally:
+            con.close()
     return render_template('request.html')
 
 @app.route('/upload', methods = ['POST','GET']) 
@@ -80,24 +79,22 @@ def upload():
             key = request.form["key1"]
             image = request.files["image"]
             imagePath = request.form["image1"]
-            sizeInBytes = os.stat(imagePath + "\\" + image.filename).st_size / 1000
-            print(sizeInBytes)
-            totalSize = totalSize + sizeInBytes
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
+            saveFile(path + image.filename, image.filename, imagePath)
+            sizeInBytes = os.stat(path + image.filename).st_size
+            totalSize = totalSize + sizeInBytes
             if(isNewKey) :
-                cur.execute("INSERT INTO images (key,image,size) VALUES(?,?,?)",(key, image.filename, sizeInBytes))            
+                cur.execute("INSERT INTO images (key,image,size) VALUES(?,?,?)",(key, image.filename))            
                 done = "Upload Successfully"
             else :
-                cur.execute("UPDATE images SET image = ?,size = ? WHERE key = ?", (image.filename, sizeInBytes, key))
+                cur.execute("UPDATE images SET image = ?,size = ? WHERE key = ?", (image.filename, key))
                 done = "Update Successfully"
             con.commit()
             con.close()
-            saveFile(path + image.filename, image.filename, imagePath)
             miss = miss + 1
             missRate = missRate + (miss / (hit + miss))
-            totalImagesSize()
-            randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
+            randomPolicy(key) if policyy == '1' else leastRecentlyUsed(key)
             memcache[key] = image.filename
         except:
             return 'error'
@@ -136,28 +133,33 @@ def config():
             key = request.form["key"]
             capacity = request.form["Capacity in MB"] * 1000
             policyy = request.form["policy"]
-
             if request.form["clear"] == 'Clear' :
                 del memcache[key]
             elif request.form["clearAll"] == 'Clear All' :
                 memcache.clear()
-                con.commit()
-       
+                con.commit()       
        except:
             return 'error'
        finally:
             return render_template('configure.html')
     return render_template('configure.html')
 
-def randomPolicy() :
+@app.route('/static', methods = ['POST','GET']) 
+def statistic():
+    global miss, hit, policyy, hitRate, missRate, memcache, totalSize, capacity
+    return render_template('statistic.html', freeSpace = (capacity - totalSize), fullSpace = capacity, hitRate = hitRate, missRate = missRate)
+
+def randomPolicy(key) :
     global capacity, totalSize
     if totalSize > capacity:
+        totalSize = totalSize - os.stat(path + memcache[key]).st_size
         memcache.popitem(random.choice(list(memcache.values())))
 
 def leastRecentlyUsed(key) :
     global memcache, totalSize
     memcache.move_to_end(key)
     if totalSize > capacity:
+        totalSize = totalSize - os.stat(path + memcache[key]).st_size
         memcache.popitem(last = False)
 
 # NEED EDIT
