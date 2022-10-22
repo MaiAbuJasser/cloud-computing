@@ -50,15 +50,17 @@ def req():
                 hitRate = hitRate + ( hit / (hit + miss))
                 con.commit()
             else :
-                miss = miss + 1
-                missRate = missRate + (miss / (hit + miss))
                 con.commit()
                 cur.execute("SELECT key FROM images WHERE key = ?", [key])
                 isNewKey = len(cur.fetchall()) == 0
                 if not isNewKey :
                     name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()[0][0]
+                    miss = miss + 1
+                    missRate = missRate + (miss / (hit + miss))
                     memcache[key] = name
-                    leastRecentlyUsed(key)
+                    if policyy=='1':
+                      leastRecentlyUsed(key)
+                    randomPolicy()
                 else :
                     return render_template('request.html', keyCheck = "key not found !")
 
@@ -85,17 +87,29 @@ def upload():
             sizeInBytes = os.stat(path + image.filename).st_size
             totalSize = totalSize + sizeInBytes
             if(isNewKey) :
-                cur.execute("INSERT INTO images (key,image,size) VALUES(?,?,?)",(key, image.filename))            
+                cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key,image.filename))            
                 done = "Upload Successfully"
+                memcache[key] = image.filename
+                randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
             else :
-                cur.execute("UPDATE images SET image = ?,size = ? WHERE key = ?", (image.filename, key))
+                cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename,key))
                 done = "Update Successfully"
+                if key in memcache.keys() :
+                 del memcache[key]
+                 memcache[key] = image.filename
+                 randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
             con.commit()
             con.close()
             miss = miss + 1
             missRate = missRate + (miss / (hit + miss))
             randomPolicy(key) if policyy == '1' else leastRecentlyUsed(key)
             memcache[key] = image.filename
+            #saveFile(path + image.filename, image.filename, imagePath)
+            miss = miss + 1
+            missRate = missRate + (miss / (hit + miss))
+            #totalImagesSize()
+            randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
+            #memcache[key] = image.filename
         except:
             return 'error'
         finally:
