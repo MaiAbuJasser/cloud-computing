@@ -83,24 +83,28 @@ def upload():
             image = request.files["image"]
             imagePath = request.form["image1"]
             sizeInBytes = os.stat(imagePath + "\\" + image.filename).st_size / 1000
-            print(sizeInBytes)
             totalSize = totalSize + sizeInBytes
             cur.execute("SELECT key FROM images WHERE key = ?", [key])
             isNewKey = len(cur.fetchall()) == 0
             if(isNewKey) :
-                cur.execute("INSERT INTO images (key,image,size) VALUES(?,?,?)",(key,image.filename))            
+                cur.execute("INSERT INTO images (key,image) VALUES(?,?)",(key,image.filename))            
                 done = "Upload Successfully"
+                memcache[key] = image.filename
+                randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
             else :
                 cur.execute("UPDATE images SET image = ?,size = ? WHERE key = ?", (image.filename,key))
                 done = "Update Successfully"
+                del memcache[key]
+                memcache[key] = image.filename
+                randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
             con.commit()
             con.close()
-            saveFile(path + image.filename, image.filename, imagePath)
+            #saveFile(path + image.filename, image.filename, imagePath)
             miss = miss + 1
             missRate = missRate + (miss / (hit + miss))
-            totalImagesSize()
+            #totalImagesSize()
             randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
-            memcache[key] = image.filename
+            #memcache[key] = image.filename
         except:
             return 'error'
         finally:
