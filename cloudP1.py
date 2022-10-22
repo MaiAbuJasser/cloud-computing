@@ -48,9 +48,9 @@ def req():
                 leastRecentlyUsed(key)
                 hit = hit + 1
                 hitRate = hitRate + ( hit / (hit + miss))
-                con.commit()
+                #con.commit()
             else :
-                con.commit()
+                #con.commit()
                 cur.execute("SELECT key FROM images WHERE key = ?", [key])
                 isNewKey = len(cur.fetchall()) == 0
                 if not isNewKey :
