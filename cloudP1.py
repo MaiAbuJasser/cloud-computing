@@ -147,7 +147,7 @@ def config():
                 memcache.clear()
                 return render_template('configure.html', done = 'Clear memory cache successfully')
             policyy = request.form["policy"]
-            capacity = int(request.form["Capacity in MB"])
+            capacity = int(request.form["Capacity in MB"]) * 1000000
        except:
             return 'error'
        finally:
