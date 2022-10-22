@@ -38,7 +38,7 @@ hitRate = 0
 missRate = 0
 policyy = '1'
 totalSize = 0
-capacity = 1000000
+capacity = 1200000
 
 @app.route('/')
 def main() :
@@ -56,7 +56,8 @@ def req():
                 name = memcache[key]
                 leastRecentlyUsed(key)
                 hit = hit + 1
-                hitRate = hitRate + ( hit / (hit + miss))
+                hitRate = ( hit / (hit + miss))
+                missRate = (miss / (hit + miss))
                 con.commit()
             else :
                 cur.execute("SELECT key FROM images WHERE key = ?", [key])
@@ -64,9 +65,10 @@ def req():
                 if not isNewKey :
                     name = cur.execute("SELECT image FROM images WHERE key = ?", [key]).fetchall()[0][0]
                     miss = miss + 1
-                    missRate = missRate + (miss / (hit + miss))
+                    hitRate = ( hit / (hit + miss))
+                    missRate = (miss / (hit + miss))
                     memcache[key] = name
-                    randomPolicy() if policyy == '1' else leastRecentlyUsed(key)
+                    randomPolicy(key) if policyy == '1' else leastRecentlyUsed(key)
                 else :
                     return render_template('request.html', keyCheck = "key not found !")
 
@@ -81,7 +83,7 @@ def req():
 def upload():
     global miss, hit, policyy, hitRate, missRate, memcache, totalSize
     if request.method == 'POST' :
-        try:
+        # try:
             con = sqlite3.connect("P1.db")
             cur = con.cursor() 
             key = request.form["key1"]
@@ -99,18 +101,18 @@ def upload():
                 cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename,key))
                 done = "Update Successfully"
                 if key in memcache.keys() :
-                 del memcache[key]
+                    del memcache[key]
+                    totalSize = totalSize - os.stat(path + memcache[key]).st_size
             con.commit()
             con.close()
             memcache[key] = image.filename
             randomPolicy(key) if policyy == '1' else leastRecentlyUsed(key)
-            print(memcache)
             # miss = miss + 1
             # missRate = missRate + (miss / (hit + miss))
-        except:
-            return 'error'
-        finally:
-            return render_template('upload.html', done = done)
+        # except:
+        #     return 'error'
+        # finally:
+        #     return render_template('upload.html', done = done)
     return render_template('upload.html')
 
 @app.route('/list', methods = ['POST','GET']) 
@@ -138,25 +140,21 @@ def saveFile(savedFile, originalFile, originalFilePath) :
 def config():
     global miss, hit, policyy, hitRate, missRate, memcache, totalSize, capacity
     if request.method == 'POST' :
-    #    try:
+       try:
             key = request.form["key"]
             clear = request.form.get('clear')
-            print(memcache)
             if clear == 'Clear' :
                 del memcache[key]
-                print(memcache)
                 return render_template('configure.html', done = 'Clear key successfully')
             elif request.form.get('clearAll') == 'Clear All' :
                 memcache.clear()
                 return render_template('configure.html', done = 'Clear memory cache successfully')
-            # print(capacity)
             policyy = request.form["policy"]
             capacity = int(request.form["Capacity in MB"])
-            # print(capacity)
-    #    except:
-    #         return 'error'
-    #    finally:
-    #         return render_template('configure.html', done = '')
+       except:
+            return 'error'
+       finally:
+            return render_template('configure.html', done = '')
     return render_template('configure.html')
        
 @app.route('/static', methods = ['POST','GET']) 
@@ -168,11 +166,10 @@ def randomPolicy(key) :
     global capacity, totalSize
     if totalSize > capacity:
         totalSize = totalSize - os.stat(path + memcache[key]).st_size
-        memcache.popitem(random.choice(list(memcache.values())))
+        del memcache[random.choice(list(memcache.keys()))]
 
 def leastRecentlyUsed(key) :
     global memcache, totalSize
-    print(key)
     memcache.move_to_end(key)
     if totalSize > capacity:
         totalSize = totalSize - os.stat(path + memcache[key]).st_size
