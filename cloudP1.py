@@ -101,11 +101,14 @@ def upload():
                 cur.execute("UPDATE images SET image = ? WHERE key = ?", (image.filename,key))
                 done = "Update Successfully"
                 if key in memcache.keys() :
-                    del memcache[key]
                     totalSize = totalSize - os.stat(path + memcache[key]).st_size
+                    del memcache[key]
+                    
+                    
             con.commit()
             con.close()
             memcache[key] = image.filename
+            totalSize = totalSize + os.stat(path + memcache[key]).st_size
             randomPolicy(key) if policyy == '1' else leastRecentlyUsed(key)
         except:
             return 'error'
